@@ -1,0 +1,53 @@
+/*Get the grid to show on the gameArea side*/
+body{
+    margin: 0; /*Remove the gap between the elements*/
+    display: flex; /*Arrange using a flexbox*/
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden; /*Normally a browser creates a scrollbar if element goes beyond the bottom, shops this*/
+}
+
+#gameArea{
+    width: 80vw;
+    height: 100vh;
+
+    background-color: black;
+    background-image:
+        linear-gradient(to right, #888 1px, transparent 1px), /*Creates the vertical lines*/
+        linear-gradient(to bottom, #888 1px, transparent 1px); /*Creates the horrisontal lines*/
+    
+
+    background-size: 10% 10%;
+}
+
+/*Get the shop to be the remaining 20%*/
+#shop{
+    width: 20%;
+    height: 100%;
+    background-color: #1a1a1a;
+    color: grey;
+
+    padding: 15px; /*Gap between the obejects in the shop*/
+    box-sizing: border-box;
+}
+
+/*Get the text to be in the middle*/
+h1{
+    text-align: center;
+}
+
+/*Get all shop items in the correct format*/
+.shopItem{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.shopItem p{
+    margin: 0;
+}
+
+.shopItem button{
+    background-color: slategrey;
+    border-radius: 11px;
+}
