@@ -55,10 +55,34 @@ h1{
 }
 
 /*Get the ball to be in the correct postion*/
-.ball{
+.standardBall{
     position: absolute;
     width: 4vmin;
     height: 4vmin;
     border-radius: 50%;
-    background-color: red;
+    background-color: lightgrey;
+}
+
+.bigBall{
+    position: absolute;
+    width: 6vmin;
+    height: 6vmin;
+    border-radius: 50%;
+    background-color: lightblue;
+}
+
+.redBall{
+    position: absolute;
+    width: 4vmin;
+    height: 4vmin;
+    border-radius: 50%;
+    background-color: lightcoral;
+}
+
+.automoverBall{
+    position: absolute;
+    width: 4vmin;
+    height: 4vmin;
+    border-radius: 50%;
+    background-color: lightgreen;
 }
