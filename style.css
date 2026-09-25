@@ -18,6 +18,8 @@ body{
     
 
     background-size: 10% 10%;
+
+    position: relative; /*Allows the added balls to move respective to this rather than the whole window */
 }
 
 /*Get the shop to be the remaining 20%*/
@@ -50,4 +52,13 @@ h1{
 .shopItem button{
     background-color: slategrey;
     border-radius: 11px;
+}
+
+/*Get the ball to be in the correct postion*/
+.ball{
+    position: absolute;
+    width: 4vmin;
+    height: 4vmin;
+    border-radius: 50%;
+    background-color: red;
 }
