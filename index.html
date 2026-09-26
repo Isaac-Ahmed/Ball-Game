@@ -49,10 +49,15 @@
 
             <div class = "shopItem">
                 <p>Buy Lucky Ball</p>
-                <button onclick = "addLuckyBall()" id = "luckyButton">Cost 10000</button>
+                <button onclick = "addLuckyBall()" id = "luckyButton">Cost: 10000</button>
             </div>
 
             <hr>
+
+            <div class = "shopItem">
+                <p>Upgrade Clicks</p>
+                <button onclick = "upgradeClick()" id = "upgradeClickButton">Cost: 10</button>
+            </div>
             
             <div class = "shopItem">
                 <p>Upgrade Income</p>
@@ -73,6 +78,19 @@
                 <p>Upgrade Lucky Balls</p>
                 <button onclick = "upgradeLuckyBalls()" id = "upgradeLuckyBallsButton">Cost: 20000</button>
             </div>
+
+            <div class = "shopItem">
+                <p>Upgrade Jackpot</p>
+                <button onclick = "increaseJackpot()" id = "upgradeJackpotButton">Cost: 10000</button>
+            </div>
+
+            <hr>
+
+            <div class = "shopItem">
+                <p id = "rebirthShow">Rebirths: 0</p>
+                <button onclick = "rebirth()">Rebirth</button>
+            </div>
+            <p id = "rebithCostShow">Cost: 1000000</p>
         </div>
         <script src = "script.js"></script>
     </body>

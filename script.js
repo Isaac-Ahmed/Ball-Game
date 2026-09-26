@@ -1,3 +1,6 @@
+//rebirth variable
+let rebirths = 0;
+
 //upgrade varables
 let income = 0;
 let incomeCost = 25;
@@ -11,6 +14,12 @@ let scoreMultiplierCost = 200;
 let luckyUpgrade = 0; //will upgrade by 0.04 each time, up to 10 upgrades, getting 50% chance 
 let luckyCost = 20000;
 
+let clickUpgrade = 0;
+let clickCost = 10;
+
+let jackpotCost = 10000;
+let jackpot = 100;
+
 //variables for ball class
 let balls = [];
 let score = 1;
@@ -19,6 +28,7 @@ let gameArea = document.getElementById("gameArea");
 class Ball{
     constructor(type){
         this.type = type;
+        this.clicked = false;
         this.xPos = Math.random() * 100;
         this.yPos = Math.random() * 100;
         if(this.type == "standard"){
@@ -62,6 +72,9 @@ class Ball{
         //Make it call addScore if not automover
         if(this.type != "automover"){
             this.element.onclick = () => {
+                score += (clickUpgrade * scoreMultiplier);
+                this.clicked = true;
+                document.getElementById("showScore").textContent = "Score: " + score;
                 this.addScore();
                 this.move();
             }
@@ -100,6 +113,8 @@ class Ball{
 
     addScore(){
         let addedScore = 0;
+        let showScoreAdded = 0;
+        if(this.clicked){showScoreAdded = clickUpgrade * scoreMultiplier;}
         if(this.type == "standard" || this.type == "big" || this.type == "automover"){
             addedScore++;
         }
@@ -116,13 +131,19 @@ class Ball{
             let luckyChance = 0.1 + luckyUpgrade;
 
             if(Math.random() < luckyChance){
-                addedScore += 100;
+                addedScore += jackpot;
             }
         }
 
         addedScore += income;
         addedScore = addedScore * scoreMultiplier;
+        addedScore *= Math.pow(2, rebirths);
+
         score += addedScore;
+        showScoreAdded += addedScore;
+        this.showScoreGain(showScoreAdded);
+        this.clicked = false;
+
         document.getElementById("showScore").textContent = "Score: " + score;
     }
 
@@ -168,6 +189,49 @@ class Ball{
             }, automoverTimer);
         }
     }
+
+    remove(){
+        if(this.type == "automover"){
+            clearInterval(this.interval);
+        }
+
+        this.element.remove();
+
+        let index = balls.indexOf(this);
+
+        if(index != -1){
+            balls.splice(index, 1);
+        }
+    }
+
+    showScoreGain(amount){
+        let minimum = 1;
+
+        if(score >= 10000){
+            minimum = Math.pow(10, Math.floor(Math.log10(score)) - 3);
+        }
+
+        if(amount < minimum){
+            return;
+        }
+
+        let gainText = document.createElement("div");
+
+        gainText.className = "gainText";
+        gainText.textContent = "+" + amount;
+
+        gameArea.appendChild(gainText);
+
+        gainText.style.left =
+            (this.xPos + this.element.offsetWidth / 2) + "px";
+
+        gainText.style.top =
+            (this.yPos - 10) + "px";
+
+        setTimeout(() => {
+            gainText.remove();
+        }, 1000);
+            }
 }
 
 //values for the shop
@@ -280,6 +344,19 @@ addEventListener("keydown", function(ev){
 })
 
 //upgrade Buttons
+function upgradeClick(){
+    if(score >= clickCost){
+        clickUpgrade++;
+        score -= clickCost;
+        if(clickCost <= 100){clickCost += 20;}
+        else if(clickCost <= 500){clickCost += 50;}
+        else if(clickCost <= 1000){clickCost += 150;}
+        else{clickCost = Math.floor(clickCost * 1.5);}
+        document.getElementById("upgradeClickButton").textContent = "Cost: " + clickCost;
+        document.getElementById("showScore").textContent = "Score: " + score;
+    }
+}
+
 function upgradeIncome(){
     if(score >= incomeCost){
         income++;
@@ -335,5 +412,75 @@ function upgradeLuckyBalls(){
     }
     else{
         document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
+    }
+}
+
+function increaseJackpot(){
+    if(score >= jackpotCost){
+        jackpot *= 4;
+        score -= jackpotCost;
+        jackpotCost *= 5;
+        document.getElementById("upgradeJackpotButton").textContent = "Cost: " + jackpotCost;
+        document.getElementById("showScore").textContent = "Score: " + score;
+    }
+}
+
+//Rebirth
+
+function rebirth(){
+    if(score >= (Math.pow(2, rebirths) * 1000000)){
+        standardBallScore = 1;
+        bigBallScore = 30;
+        redBallScore = 40;
+        automoverScore = 120;
+        goldenBallScore = 1000;
+        noOfGoldenBalls = 0;
+        tinyBallScore = 50;
+        luckyBallScore = 10000;
+        noOfLuckyBall = 0;
+
+        income = 0;
+        incomeCost = 25;
+
+        automoverTimer = 1000;
+        automoverUpgradeCost = 100;
+
+        scoreMultiplier = 1;
+        scoreMultiplierCost = 200;
+
+        luckyUpgrade = 0;
+        luckyCost = 20000;
+
+        clickUpgrade = 0;
+        clickCost = 10;
+
+        jackpotCost = 10000;
+        jackpot = 100;
+
+        score = 1;
+
+        document.getElementById("upgradeClickButton").textContent = "Cost: " + clickCost;
+        document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
+        document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + scoreMultiplierCost;
+        document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + scoreMultiplier;
+        document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + automoverUpgradeCost;
+        document.getElementById("upgradeIncomeButton").textContent = "Cost: " + incomeCost;
+        document.getElementById("luckyButton").textContent = "Cost: " + luckyBallScore;
+        document.getElementById("goldenButton").textContent = "Cost: " + goldenBallScore;
+        document.getElementById("tinyButton").textContent = "Cost: " + tinyBallScore;
+        document.getElementById("automoverButton").textContent = "Cost: " + automoverScore;
+        document.getElementById("redButton").textContent = "Cost: " + redBallScore;
+        document.getElementById("bigButton").textContent = "Cost: " + bigBallScore;
+        document.getElementById("standardButton").textContent = "Cost: " + standardBallScore;
+        document.getElementById("upgradeJackpotButton").textContent = "Cost: " + jackpotCost;
+        document.getElementById("showScore").textContent = "Score: " + score;
+
+        while(balls.length > 0){
+            balls[0].remove();
+        }
+
+        rebirths++;
+        document.getElementById("rebirthShow").textContent = "Rebirths: " + rebirths;
+        document.getElementById("rebithCostShow").textContent = "Cost: " + Math.pow(2, rebirths) * 1000000
     }
 }

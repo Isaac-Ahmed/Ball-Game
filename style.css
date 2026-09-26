@@ -127,3 +127,25 @@ hr{
     width: 100%;
     margin: 20px 0;
 }
+
+/*Create text above the balls to show the score increase*/
+.gainText{
+    position: absolute;
+    color: lightgrey;
+    font-weight: bold;
+    pointer-events: none;
+
+    animation: scoreGain 1s forwards;
+}
+
+@keyframes scoreGain{
+    from{
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to{
+        transform: translateY(-25px);
+        opacity: 0;
+    }
+}
