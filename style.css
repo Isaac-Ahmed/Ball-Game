@@ -86,3 +86,44 @@ h1{
     border-radius: 50%;
     background-color: lightgreen;
 }
+
+.goldenBall{
+    position: absolute;
+    width: 4vmin;
+    height: 4vmin;
+    border-radius: 50%;
+    background-color: gold;
+}
+
+.tinyBall{
+    position: absolute;
+    width: 2vmin;
+    height: 2vmin;
+    border-radius: 50%;
+    background-color: lightseagreen;
+}
+
+.luckyBall{
+    position: absolute;
+    width: 4vmin;
+    height: 4vmin;
+    border-radius: 50%;
+    background-color: lightyellow;
+
+    /*Let ? be in middle*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: darkslategrey;
+
+    font-family: Arial Black, Arial, sans-serif;
+    font-weight: bold;
+}
+
+/*Create a divider between upgrades and balls*/
+hr{
+    border: none;
+    border-top: 1px solid gray;
+    width: 100%;
+    margin: 20px 0;
+}

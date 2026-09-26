@@ -1,3 +1,17 @@
+//upgrade varables
+let income = 0;
+let incomeCost = 25;
+
+let automoverTimer = 1000;
+let automoverUpgradeCost = 100;
+
+let scoreMultiplier = 1;
+let scoreMultiplierCost = 200;
+
+let luckyUpgrade = 0; //will upgrade by 0.04 each time, up to 10 upgrades, getting 50% chance 
+let luckyCost = 20000;
+
+//variables for ball class
 let balls = [];
 let score = 1;
 let gameArea = document.getElementById("gameArea");
@@ -32,6 +46,16 @@ class Ball{
         if(this.type == "automover"){
             this.element.className = "automoverBall";
         }
+        if(this.type == "golden"){
+            this.element.className = "goldenBall";
+        }
+        if(this.type == "tiny"){
+            this.element.className = "tinyBall";
+        }
+        if(this.type == "lucky"){
+            this.element.className = "luckyBall";
+            this.element.textContent = "?";
+        }
         //Put element in the gameArea
         document.getElementById("gameArea").appendChild(this.element);
         balls.push(this);
@@ -43,10 +67,11 @@ class Ball{
             }
         }
         else{
-            setInterval(() => {
+            this.interval = setInterval(() => {
                 this.move();
                 this.addScore();
-            }, 1000);
+            }, automoverTimer);
+            
         }
 
         //Move the ball so it shows
@@ -74,15 +99,30 @@ class Ball{
     }
 
     addScore(){
-        if(this.type == "standard" || this.type == "big"){
-            score++;
+        let addedScore = 0;
+        if(this.type == "standard" || this.type == "big" || this.type == "automover"){
+            addedScore++;
         }
         else if(this.type == "red"){
-            score += 2;
+            addedScore += 2;
         }
-        else if(this.type == "automover"){
-            score +=  1;
+        else if(this.type == "tiny"){
+            addedScore += 3 + income; //Gives tiny ball x2 income bonus
         }
+        else if(this.type == "golden"){
+            addedScore +=  10;
+        }
+        else if(this.type == "lucky"){
+            let luckyChance = 0.1 + luckyUpgrade;
+
+            if(Math.random() < luckyChance){
+                addedScore += 100;
+            }
+        }
+
+        addedScore += income;
+        addedScore = addedScore * scoreMultiplier;
+        score += addedScore;
         document.getElementById("showScore").textContent = "Score: " + score;
     }
 
@@ -118,13 +158,28 @@ class Ball{
     getSize(){
         return this.size;
     }
+
+    updateAutomoverTimer(){
+        if(this.type == "automover"){
+            clearInterval(this.interval);
+            this.interval = setInterval(() => {
+                this.move();
+                this.addScore();
+            }, automoverTimer);
+        }
+    }
 }
 
 //values for the shop
-standardBallScore = 1;
-bigBallScore = 30;
-redBallScore = 100;
-automoverScore = 120;
+let standardBallScore = 1;
+let bigBallScore = 30;
+let redBallScore = 40;
+let automoverScore = 120;
+let goldenBallScore = 1000;
+let noOfGoldenBalls = 0;
+let tinyBallScore = 50;
+let luckyBallScore = 10000;
+let noOfLuckyBall = 0;
 
 function addStandardBall(){
     if(score >= standardBallScore){
@@ -134,7 +189,7 @@ function addStandardBall(){
             standardBallScore = 10;
         }
         else{
-            standardBallScore = standardBallScore * 2;
+            standardBallScore = Math.floor(standardBallScore * 1.5);
         }
     }
     document.getElementById("standardButton").textContent = "Cost: " + standardBallScore;
@@ -171,12 +226,51 @@ function addAutomover(){
     }
 }
 
+function addGoldenBall(){
+    if(score >= goldenBallScore && noOfGoldenBalls <= 9){
+        noOfGoldenBalls++;
+        score -= goldenBallScore;
+        new Ball("golden");
+        goldenBallScore = goldenBallScore * 3;
+        if(noOfGoldenBalls == 10){document.getElementById("goldenButton").textContent = "MAX";}
+        else{document.getElementById("goldenButton").textContent = "Cost: " + goldenBallScore;}
+        document.getElementById("showScore").textContent = "Score: " + score;
+    }
+}
+
+function addTinyBall(){
+    if(score >= tinyBallScore){
+        score -= tinyBallScore;
+        new Ball("tiny");
+        tinyBallScore *= 3;
+    }
+    document.getElementById("tinyButton").textContent = "Cost: " + tinyBallScore;
+    document.getElementById("showScore").textContent = "Score: " + score;
+}
+
+function addLuckyBall(){
+    if(noOfLuckyBall < 5 && score >= luckyBallScore){
+        score -= luckyBallScore;
+        luckyBallScore *= 10;
+        new Ball("lucky");
+        noOfLuckyBall++;
+    }
+    if(noOfLuckyBall == 5){
+        document.getElementById("luckyButton").textContent = "MAX";
+    }
+    else{
+        document.getElementById("luckyButton").textContent = "Cost: " + luckyBallScore;
+    }
+    document.getElementById("showScore").textContent = "Score: " + score;
+}
+
 //cheat button
 addEventListener("keydown", function(ev){
     let key = ev.key;
 
     if(key == "c"){
         score = score + 19000000000000000;
+        score = Math.pow(score, 100);
         document.getElementById("showScore").textContent = "Score: " + score;
     }
     if(key == "0"){
@@ -184,3 +278,62 @@ addEventListener("keydown", function(ev){
         document.getElementById("showScore").textContent = "Score: " + score;
     }
 })
+
+//upgrade Buttons
+function upgradeIncome(){
+    if(score >= incomeCost){
+        income++;
+        score -= incomeCost;
+        incomeCost = incomeCost * 2;
+    }
+    document.getElementById("upgradeIncomeButton").textContent = "Cost: " + incomeCost;
+    document.getElementById("showScore").textContent = "Score: " + score;
+}
+
+function upgradeAutomover(){
+    if(score >= automoverUpgradeCost && automoverTimer != 100){
+        automoverTimer -= 100;
+        score -= automoverUpgradeCost;
+        automoverUpgradeCost = automoverUpgradeCost * 2;
+
+        for(let x of balls){
+            x.updateAutomoverTimer();
+        }
+    }
+    document.getElementById("showScore").textContent = "Score: " + score;
+    if(automoverTimer == 100){
+        document.getElementById("upgradeAutomoverButton").textContent = "MAX";
+    }
+    else{
+        document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + automoverUpgradeCost;
+    }
+}
+
+function upgradeMultiplier(){
+    if(score >= scoreMultiplierCost){
+        scoreMultiplier++;
+        score -= scoreMultiplierCost;
+        scoreMultiplierCost = scoreMultiplierCost * 2;
+    }
+    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + scoreMultiplierCost;
+    document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + scoreMultiplier;
+}
+
+function upgradeLuckyBalls(){
+    if(score >= luckyCost && luckyUpgrade < 0.4){
+        luckyUpgrade += 0.04;
+        score -= luckyCost;
+        luckyCost = Math.floor(luckyCost * 1.5);
+    }
+
+    document.getElementById("showScore").textContent = "Score: " + score;
+
+    if(luckyUpgrade >= 0.4){
+        luckyUpgrade = 0.4;
+        document.getElementById("upgradeLuckyBallsButton").textContent = "MAX";
+    }
+    else{
+        document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
+    }
+}
