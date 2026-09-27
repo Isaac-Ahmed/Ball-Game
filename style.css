@@ -149,3 +149,20 @@ hr{
         opacity: 0;
     }
 }
+
+/*Make black hole look good*/
+.blackHole{
+    position: absolute;
+
+    width: 8vmin;
+    height: 8vmin;
+
+    border-radius: 50%;
+
+    background-color: black;
+
+    box-shadow:
+        0 0 10px purple,
+        0 0 20px rgba(128, 0, 128, 0.7),
+        0 0 35px rgba(128, 0, 128, 0.4);
+}

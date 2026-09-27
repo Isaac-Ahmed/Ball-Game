@@ -20,6 +20,8 @@ let clickCost = 10;
 let jackpotCost = 10000;
 let jackpot = 100;
 
+let eaten = 0;
+
 //variables for ball class
 let balls = [];
 let score = 1;
@@ -66,29 +68,38 @@ class Ball{
             this.element.className = "luckyBall";
             this.element.textContent = "?";
         }
+        if(this.type == "blackHole"){
+            this.element.className = "blackHole";
+        }
         //Put element in the gameArea
         document.getElementById("gameArea").appendChild(this.element);
         balls.push(this);
         //Make it call addScore if not automover
-        if(this.type != "automover"){
-            this.element.onclick = () => {
-                score += (clickUpgrade * scoreMultiplier);
-                this.clicked = true;
-                document.getElementById("showScore").textContent = "Score: " + score;
-                this.addScore();
-                this.move();
-            }
-        }
-        else{
+        if(this.type == "automover"){
             this.interval = setInterval(() => {
                 this.move();
                 this.addScore();
             }, automoverTimer);
-            
-        }
 
-        //Move the ball so it shows
-        this.move();
+            this.move();
+        }
+        else if(this.type == "blackHole"){
+            this.xPos = (gameArea.clientWidth - this.element.offsetWidth) / 2;
+            this.yPos = (gameArea.clientHeight - this.element.offsetHeight) / 2;
+
+            this.element.style.left = this.xPos + "px";
+            this.element.style.top = this.yPos + "px";
+        }
+        else{
+            this.element.onclick = () => {
+                score += (clickUpgrade * scoreMultiplier);
+                this.clicked = true;
+                this.addScore();
+                this.move();
+            }
+
+            this.move();
+        }
     }
 
     move(){
@@ -148,23 +159,67 @@ class Ball{
     }
 
     checkCollision(otherBall){
-        let thisRadius = this.element.offsetWidth / 2;
-        let otherRadius = otherBall.element.offsetWidth / 2;
+        if(otherBall.type != "blackHole"){
+            let thisRadius = this.element.offsetWidth / 2;
+            let otherRadius = otherBall.element.offsetWidth / 2;
 
-        let thisCentreX = this.xPos + thisRadius;
-        let thisCentreY = this.yPos + thisRadius;
+            let thisCentreX = this.xPos + thisRadius;
+            let thisCentreY = this.yPos + thisRadius;
 
-        let otherCentreX = otherBall.xPos + otherRadius;
-        let otherCentreY = otherBall.yPos + otherRadius;
+            let otherCentreX = otherBall.xPos + otherRadius;
+            let otherCentreY = otherBall.yPos + otherRadius;
 
-        let dx = thisCentreX - otherCentreX;
-        let dy = thisCentreY - otherCentreY;
+            let dx = thisCentreX - otherCentreX;
+            let dy = thisCentreY - otherCentreY;
 
-        let distance = Math.sqrt((dx * dx) + (dy * dy));
+            let distance = Math.sqrt((dx * dx) + (dy * dy));
 
-        if(distance <= thisRadius + otherRadius){
-            otherBall.addScore();
-            otherBall.move();
+            if(distance <= thisRadius + otherRadius){
+                otherBall.addScore();
+                otherBall.move();
+            }
+        }
+        else{
+            let thisRadius = this.element.offsetWidth / 2;
+            let otherRadius = otherBall.element.offsetWidth / 2;
+
+            let thisCentreX = this.xPos + thisRadius;
+            let thisCentreY = this.yPos + thisRadius;
+
+            let otherCentreX = otherBall.xPos + otherRadius;
+            let otherCentreY = otherBall.yPos + otherRadius;
+
+            let dx = thisCentreX - otherCentreX;
+            let dy = thisCentreY - otherCentreY;
+
+            let distance = Math.sqrt((dx * dx) + (dy * dy));
+
+            if(distance <= thisRadius + otherRadius){
+
+                for(let i = 0; i < (eaten + 10); i++){
+                    this.addScore();
+                }
+
+                let x = Math.random();
+
+                if(x <= 0.1){
+
+                    if(this.type == "lucky"){
+                        noOfLuckyBall--;
+                        document.getElementById("luckyButton").textContent =
+                            "Cost: " + luckyBallScore;
+                    }
+
+                    if(this.type == "golden"){
+                        noOfGoldenBalls--;
+                        document.getElementById("goldenButton").textContent =
+                            "Cost: " + goldenBallScore;
+                    }
+
+                    eaten++;
+                    this.remove();
+                }
+            }
         }
     }
 
@@ -244,6 +299,7 @@ let noOfGoldenBalls = 0;
 let tinyBallScore = 50;
 let luckyBallScore = 10000;
 let noOfLuckyBall = 0;
+let hasBlackHole = false;
 
 function addStandardBall(){
     if(score >= standardBallScore){
@@ -326,6 +382,16 @@ function addLuckyBall(){
         document.getElementById("luckyButton").textContent = "Cost: " + luckyBallScore;
     }
     document.getElementById("showScore").textContent = "Score: " + score;
+}
+
+function addBlackHole(){
+    if(!hasBlackHole && score >= 100000000){
+        score -= 100000000;
+        document.getElementById("blackHoleButton").textContent = "MAX";
+        new Ball("blackHole");
+        document.getElementById("showScore").textContent = "Score: " + score;
+        hasBlackHole = true;
+    }
 }
 
 //cheat button
@@ -439,6 +505,8 @@ function rebirth(){
         luckyBallScore = 10000;
         noOfLuckyBall = 0;
 
+        eaten = 0;
+
         income = 0;
         incomeCost = 25;
 
@@ -458,6 +526,9 @@ function rebirth(){
         jackpot = 100;
 
         score = 1;
+
+        document.getElementById("blackHoleButton").textContent = "Cost: 100000000";
+        hasBlackHole = false;
 
         document.getElementById("upgradeClickButton").textContent = "Cost: " + clickCost;
         document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
@@ -483,4 +554,64 @@ function rebirth(){
         document.getElementById("rebirthShow").textContent = "Rebirths: " + rebirths;
         document.getElementById("rebithCostShow").textContent = "Cost: " + Math.pow(2, rebirths) * 1000000
     }
+}
+
+function resetGame(){
+    standardBallScore = 1;
+    bigBallScore = 30;
+    redBallScore = 40;
+    automoverScore = 120;
+    goldenBallScore = 1000;
+    noOfGoldenBalls = 0;
+    tinyBallScore = 50;
+    luckyBallScore = 10000;
+    noOfLuckyBall = 0;
+
+    eaten = 0;
+
+    income = 0;
+    incomeCost = 25;
+
+    automoverTimer = 1000;
+    automoverUpgradeCost = 100;
+
+    scoreMultiplier = 1;
+    scoreMultiplierCost = 200;
+
+    luckyUpgrade = 0;
+    luckyCost = 20000;
+
+    clickUpgrade = 0;
+    clickCost = 10;
+
+    jackpotCost = 10000;
+    jackpot = 100;
+
+    score = 1;
+
+    document.getElementById("blackHoleButton").textContent = "Cost: 100000000";
+    hasBlackHole = false;
+
+    document.getElementById("upgradeClickButton").textContent = "Cost: " + clickCost;
+    document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
+    document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + scoreMultiplierCost;
+    document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + scoreMultiplier;
+    document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + automoverUpgradeCost;
+    document.getElementById("upgradeIncomeButton").textContent = "Cost: " + incomeCost;
+    document.getElementById("luckyButton").textContent = "Cost: " + luckyBallScore;
+    document.getElementById("goldenButton").textContent = "Cost: " + goldenBallScore;
+    document.getElementById("tinyButton").textContent = "Cost: " + tinyBallScore;
+    document.getElementById("automoverButton").textContent = "Cost: " + automoverScore;
+    document.getElementById("redButton").textContent = "Cost: " + redBallScore;
+    document.getElementById("bigButton").textContent = "Cost: " + bigBallScore;
+    document.getElementById("standardButton").textContent = "Cost: " + standardBallScore;
+    document.getElementById("upgradeJackpotButton").textContent = "Cost: " + jackpotCost;
+    document.getElementById("showScore").textContent = "Score: " + score;
+
+    while(balls.length > 0){
+        balls[0].remove();
+    }
+
+    document.getElementById("rebirthShow").textContent = "Rebirths: " + rebirths;
+    document.getElementById("rebithCostShow").textContent = "Cost: " + Math.pow(2, rebirths) * 1000000
 }
