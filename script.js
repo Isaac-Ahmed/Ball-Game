@@ -1,5 +1,9 @@
-//rebirth variable
+//rebirth variables
 let rebirths = 0;
+let newBalls = ["persistent", "pulse", "corner", "orbiter", "chain"];
+let fullRebirths = 0;
+let fullRebirthCost = 100000000;
+let justFullRebirthed = false;
 
 //upgrade varables
 let income = 0;
@@ -71,6 +75,9 @@ class Ball{
         if(this.type == "blackHole"){
             this.element.className = "blackHole";
         }
+        if(this.type == "persistent"){
+            this.element.className = "persistentBall";
+        }
         //Put element in the gameArea
         document.getElementById("gameArea").appendChild(this.element);
         balls.push(this);
@@ -126,7 +133,7 @@ class Ball{
         let addedScore = 0;
         let showScoreAdded = 0;
         if(this.clicked){showScoreAdded = clickUpgrade * scoreMultiplier;}
-        if(this.type == "standard" || this.type == "big" || this.type == "automover"){
+        if(this.type == "standard" || this.type == "big" || this.type == "automover" || this.type == "persistent"){
             addedScore++;
         }
         else if(this.type == "red"){
@@ -180,44 +187,46 @@ class Ball{
             }
         }
         else{
-            let thisRadius = this.element.offsetWidth / 2;
-            let otherRadius = otherBall.element.offsetWidth / 2;
+            if(this.type != "persistent"){
+                let thisRadius = this.element.offsetWidth / 2;
+                let otherRadius = otherBall.element.offsetWidth / 2;
 
-            let thisCentreX = this.xPos + thisRadius;
-            let thisCentreY = this.yPos + thisRadius;
+                let thisCentreX = this.xPos + thisRadius;
+                let thisCentreY = this.yPos + thisRadius;
 
-            let otherCentreX = otherBall.xPos + otherRadius;
-            let otherCentreY = otherBall.yPos + otherRadius;
+                let otherCentreX = otherBall.xPos + otherRadius;
+                let otherCentreY = otherBall.yPos + otherRadius;
 
-            let dx = thisCentreX - otherCentreX;
-            let dy = thisCentreY - otherCentreY;
+                let dx = thisCentreX - otherCentreX;
+                let dy = thisCentreY - otherCentreY;
 
-            let distance = Math.sqrt((dx * dx) + (dy * dy));
+                let distance = Math.sqrt((dx * dx) + (dy * dy));
 
-            if(distance <= thisRadius + otherRadius){
+                if(distance <= thisRadius + otherRadius){
 
-                for(let i = 0; i < (eaten + 10); i++){
-                    this.addScore();
-                }
-
-                let x = Math.random();
-
-                if(x <= 0.1){
-
-                    if(this.type == "lucky"){
-                        noOfLuckyBall--;
-                        document.getElementById("luckyButton").textContent =
-                            "Cost: " + luckyBallScore;
+                    for(let i = 0; i < (eaten + 10); i++){
+                        this.addScore();
                     }
 
-                    if(this.type == "golden"){
-                        noOfGoldenBalls--;
-                        document.getElementById("goldenButton").textContent =
-                            "Cost: " + goldenBallScore;
-                    }
+                    let x = Math.random();
 
-                    eaten++;
-                    this.remove();
+                    if(x <= 0.1){
+
+                        if(this.type == "lucky"){
+                            noOfLuckyBall--;
+                            document.getElementById("luckyButton").textContent =
+                                "Cost: " + luckyBallScore;
+                        }
+
+                        if(this.type == "golden"){
+                            noOfGoldenBalls--;
+                            document.getElementById("goldenButton").textContent =
+                                "Cost: " + goldenBallScore;
+                        }
+
+                        eaten++;
+                        this.remove();
+                    }
                 }
             }
         }
@@ -494,18 +503,32 @@ function increaseJackpot(){
 //Rebirth
 
 function rebirth(){
-    if(score >= (Math.pow(2, rebirths) * 1000000)){
+    if(score >= (Math.pow(3, rebirths) * 1000000)){
+
+        // --------------------
+        // RESET BALL SHOP
+        // --------------------
+
         standardBallScore = 1;
         bigBallScore = 30;
         redBallScore = 40;
         automoverScore = 120;
+
         goldenBallScore = 1000;
         noOfGoldenBalls = 0;
+
         tinyBallScore = 50;
+
         luckyBallScore = 10000;
         noOfLuckyBall = 0;
 
+        hasBlackHole = false;
         eaten = 0;
+
+
+        // --------------------
+        // RESET UPGRADES
+        // --------------------
 
         income = 0;
         incomeCost = 25;
@@ -525,49 +548,119 @@ function rebirth(){
         jackpotCost = 10000;
         jackpot = 100;
 
+
+        // --------------------
+        // RESET SCORE
+        // --------------------
+
         score = 1;
 
-        document.getElementById("blackHoleButton").textContent = "Cost: 100000000";
-        hasBlackHole = false;
 
-        document.getElementById("upgradeClickButton").textContent = "Cost: " + clickCost;
-        document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
-        document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + scoreMultiplierCost;
-        document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + scoreMultiplier;
-        document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + automoverUpgradeCost;
-        document.getElementById("upgradeIncomeButton").textContent = "Cost: " + incomeCost;
-        document.getElementById("luckyButton").textContent = "Cost: " + luckyBallScore;
-        document.getElementById("goldenButton").textContent = "Cost: " + goldenBallScore;
-        document.getElementById("tinyButton").textContent = "Cost: " + tinyBallScore;
-        document.getElementById("automoverButton").textContent = "Cost: " + automoverScore;
-        document.getElementById("redButton").textContent = "Cost: " + redBallScore;
-        document.getElementById("bigButton").textContent = "Cost: " + bigBallScore;
-        document.getElementById("standardButton").textContent = "Cost: " + standardBallScore;
-        document.getElementById("upgradeJackpotButton").textContent = "Cost: " + jackpotCost;
-        document.getElementById("showScore").textContent = "Score: " + score;
+        // --------------------
+        // RESET SHOP DISPLAY
+        // --------------------
 
-        while(balls.length > 0){
-            balls[0].remove();
+        document.getElementById("blackHoleButton").textContent =
+            "Cost: 100000000";
+
+        document.getElementById("upgradeClickButton").textContent =
+            "Cost: " + clickCost;
+
+        document.getElementById("upgradeLuckyBallsButton").textContent =
+            "Cost: " + luckyCost;
+
+        document.getElementById("upgradeMultiplierButton").textContent =
+            "Cost: " + scoreMultiplierCost;
+
+        document.getElementById("showMultiplier").textContent =
+            "Upgrade Multiplier x" + scoreMultiplier;
+
+        document.getElementById("upgradeAutomoverButton").textContent =
+            "Cost: " + automoverUpgradeCost;
+
+        document.getElementById("upgradeIncomeButton").textContent =
+            "Cost: " + incomeCost;
+
+        document.getElementById("luckyButton").textContent =
+            "Cost: " + luckyBallScore;
+
+        document.getElementById("goldenButton").textContent =
+            "Cost: " + goldenBallScore;
+
+        document.getElementById("tinyButton").textContent =
+            "Cost: " + tinyBallScore;
+
+        document.getElementById("automoverButton").textContent =
+            "Cost: " + automoverScore;
+
+        document.getElementById("redButton").textContent =
+            "Cost: " + redBallScore;
+
+        document.getElementById("bigButton").textContent =
+            "Cost: " + bigBallScore;
+
+        document.getElementById("standardButton").textContent =
+            "Cost: " + standardBallScore;
+
+        document.getElementById("upgradeJackpotButton").textContent =
+            "Cost: " + jackpotCost;
+
+        document.getElementById("showScore").textContent =
+            "Score: " + score;
+
+
+        // --------------------
+        // REMOVE NORMAL BALLS
+        // KEEP PERSISTENT BALL
+        // --------------------
+
+        for(let i = balls.length - 1; i >= 0; i--){
+            if(balls[i].type != "persistent"){
+                balls[i].remove();
+            }
         }
 
+
+        // --------------------
+        // INCREASE REBIRTH
+        // --------------------
+
         rebirths++;
-        document.getElementById("rebirthShow").textContent = "Rebirths: " + rebirths;
-        document.getElementById("rebithCostShow").textContent = "Cost: " + Math.pow(2, rebirths) * 1000000
+
+        document.getElementById("rebirthShow").textContent =
+            "Rebirths: " + rebirths;
+
+        document.getElementById("rebithCostShow").textContent =
+            "Cost: " + Math.pow(3, rebirths) * 1000000;
     }
 }
 
 function resetGame(){
+
+    // --------------------
+    // RESET BALL SHOP
+    // --------------------
+
     standardBallScore = 1;
     bigBallScore = 30;
     redBallScore = 40;
     automoverScore = 120;
+
     goldenBallScore = 1000;
     noOfGoldenBalls = 0;
+
     tinyBallScore = 50;
+
     luckyBallScore = 10000;
     noOfLuckyBall = 0;
 
+    hasBlackHole = false;
     eaten = 0;
+
+
+    // --------------------
+    // RESET UPGRADES
+    // --------------------
 
     income = 0;
     incomeCost = 25;
@@ -587,31 +680,285 @@ function resetGame(){
     jackpotCost = 10000;
     jackpot = 100;
 
+
+    // --------------------
+    // RESET SCORE
+    // --------------------
+
     score = 1;
 
-    document.getElementById("blackHoleButton").textContent = "Cost: 100000000";
-    hasBlackHole = false;
 
-    document.getElementById("upgradeClickButton").textContent = "Cost: " + clickCost;
-    document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
-    document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + scoreMultiplierCost;
-    document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + scoreMultiplier;
-    document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + automoverUpgradeCost;
-    document.getElementById("upgradeIncomeButton").textContent = "Cost: " + incomeCost;
-    document.getElementById("luckyButton").textContent = "Cost: " + luckyBallScore;
-    document.getElementById("goldenButton").textContent = "Cost: " + goldenBallScore;
-    document.getElementById("tinyButton").textContent = "Cost: " + tinyBallScore;
-    document.getElementById("automoverButton").textContent = "Cost: " + automoverScore;
-    document.getElementById("redButton").textContent = "Cost: " + redBallScore;
-    document.getElementById("bigButton").textContent = "Cost: " + bigBallScore;
-    document.getElementById("standardButton").textContent = "Cost: " + standardBallScore;
-    document.getElementById("upgradeJackpotButton").textContent = "Cost: " + jackpotCost;
-    document.getElementById("showScore").textContent = "Score: " + score;
+    // --------------------
+    // RESET SHOP DISPLAY
+    // --------------------
 
-    while(balls.length > 0){
-        balls[0].remove();
+    document.getElementById("blackHoleButton").textContent =
+        "Cost: 100000000";
+
+    document.getElementById("upgradeClickButton").textContent =
+        "Cost: " + clickCost;
+
+    document.getElementById("upgradeLuckyBallsButton").textContent =
+        "Cost: " + luckyCost;
+
+    document.getElementById("upgradeMultiplierButton").textContent =
+        "Cost: " + scoreMultiplierCost;
+
+    document.getElementById("showMultiplier").textContent =
+        "Upgrade Multiplier x" + scoreMultiplier;
+
+    document.getElementById("upgradeAutomoverButton").textContent =
+        "Cost: " + automoverUpgradeCost;
+
+    document.getElementById("upgradeIncomeButton").textContent =
+        "Cost: " + incomeCost;
+
+    document.getElementById("luckyButton").textContent =
+        "Cost: " + luckyBallScore;
+
+    document.getElementById("goldenButton").textContent =
+        "Cost: " + goldenBallScore;
+
+    document.getElementById("tinyButton").textContent =
+        "Cost: " + tinyBallScore;
+
+    document.getElementById("automoverButton").textContent =
+        "Cost: " + automoverScore;
+
+    document.getElementById("redButton").textContent =
+        "Cost: " + redBallScore;
+
+    document.getElementById("bigButton").textContent =
+        "Cost: " + bigBallScore;
+
+    document.getElementById("standardButton").textContent =
+        "Cost: " + standardBallScore;
+
+    document.getElementById("upgradeJackpotButton").textContent =
+        "Cost: " + jackpotCost;
+
+    document.getElementById("showScore").textContent =
+        "Score: " + score;
+
+
+    // --------------------
+    // REMOVE NORMAL BALLS
+    // KEEP PERSISTENT BALL
+    // --------------------
+
+    for(let i = balls.length - 1; i >= 0; i--){
+        if(balls[i].type != "persistent"){
+            balls[i].remove();
+        }
     }
 
-    document.getElementById("rebirthShow").textContent = "Rebirths: " + rebirths;
-    document.getElementById("rebithCostShow").textContent = "Cost: " + Math.pow(2, rebirths) * 1000000
+
+    // --------------------
+    // KEEP CURRENT REBIRTH
+    // --------------------
+
+    document.getElementById("rebirthShow").textContent =
+        "Rebirths: " + rebirths;
+
+    document.getElementById("rebithCostShow").textContent =
+        "Cost: " + Math.pow(3, rebirths) * 1000000;
+}
+
+function fullRebirth(){
+
+    if(rebirths >= 10 && score >= fullRebirthCost){
+
+        // --------------------
+        // RESET BALL SHOP
+        // --------------------
+
+        standardBallScore = 1;
+        bigBallScore = 30;
+        redBallScore = 40;
+        automoverScore = 120;
+
+        goldenBallScore = 1000;
+        noOfGoldenBalls = 0;
+
+        tinyBallScore = 50;
+
+        luckyBallScore = 10000;
+        noOfLuckyBall = 0;
+
+        hasBlackHole = false;
+        eaten = 0;
+
+        hasPersistentBall = false;
+
+
+        // --------------------
+        // RESET UPGRADES
+        // --------------------
+
+        income = 0;
+        incomeCost = 25;
+
+        automoverTimer = 1000;
+        automoverUpgradeCost = 100;
+
+        scoreMultiplier = 1;
+        scoreMultiplierCost = 200;
+
+        luckyUpgrade = 0;
+        luckyCost = 20000;
+
+        clickUpgrade = 0;
+        clickCost = 10;
+
+        jackpotCost = 10000;
+        jackpot = 100;
+
+
+        // --------------------
+        // RESET SCORE
+        // --------------------
+
+        score = 1;
+
+
+        // --------------------
+        // RESET SHOP DISPLAY
+        // --------------------
+
+        document.getElementById("blackHoleButton").textContent =
+            "Cost: 100000000";
+
+        document.getElementById("persistentBallButton").textContent =
+            "Cost: 10000000";
+
+        document.getElementById("upgradeClickButton").textContent =
+            "Cost: " + clickCost;
+
+        document.getElementById("upgradeLuckyBallsButton").textContent =
+            "Cost: " + luckyCost;
+
+        document.getElementById("upgradeMultiplierButton").textContent =
+            "Cost: " + scoreMultiplierCost;
+
+        document.getElementById("showMultiplier").textContent =
+            "Upgrade Multiplier x" + scoreMultiplier;
+
+        document.getElementById("upgradeAutomoverButton").textContent =
+            "Cost: " + automoverUpgradeCost;
+
+        document.getElementById("upgradeIncomeButton").textContent =
+            "Cost: " + incomeCost;
+
+        document.getElementById("luckyButton").textContent =
+            "Cost: " + luckyBallScore;
+
+        document.getElementById("goldenButton").textContent =
+            "Cost: " + goldenBallScore;
+
+        document.getElementById("tinyButton").textContent =
+            "Cost: " + tinyBallScore;
+
+        document.getElementById("automoverButton").textContent =
+            "Cost: " + automoverScore;
+
+        document.getElementById("redButton").textContent =
+            "Cost: " + redBallScore;
+
+        document.getElementById("bigButton").textContent =
+            "Cost: " + bigBallScore;
+
+        document.getElementById("standardButton").textContent =
+            "Cost: " + standardBallScore;
+
+        document.getElementById("upgradeJackpotButton").textContent =
+            "Cost: " + jackpotCost;
+
+        document.getElementById("showScore").textContent =
+            "Score: " + score;
+
+
+        // --------------------
+        // REMOVE ALL BALLS
+        // --------------------
+
+        while(balls.length > 0){
+            balls[0].remove();
+        }
+
+
+        // --------------------
+        // RESET NORMAL REBIRTHS
+        // --------------------
+
+        rebirths = 0;
+
+        document.getElementById("rebirthShow").textContent =
+            "Rebirths: " + rebirths;
+
+        document.getElementById("rebithCostShow").textContent =
+            "Cost: " + Math.pow(3, rebirths) * 1000000;
+
+
+        // --------------------
+        // INCREASE FULL REBIRTH
+        // --------------------
+
+        fullRebirths++;
+
+        fullRebirthCost *= 5;
+
+        document.getElementById("fullRebirthButton").textContent =
+            "Cost: " + fullRebirthCost + " and 10 Rebirths";
+
+
+        // --------------------
+        // UNLOCK FULL REBIRTH SHOP
+        // --------------------
+
+        if(fullRebirths == 1){
+            document.getElementById("fullRebirthDivider")
+                .classList.add("nowOnDisplay");
+
+            document.getElementById("fullRebirthShop")
+                .classList.add("nowOnDisplay");
+
+            document.getElementById("persistent")
+                .classList.add("nowOnDisplay");
+        }
+
+
+        // --------------------
+        // SHOW NEXT BALL UNLOCK
+        // --------------------
+
+        if(fullRebirths < newBalls.length){
+
+            let newBallName = newBalls[fullRebirths];
+
+            let capitalisedBallName =
+                newBallName.charAt(0).toUpperCase() +
+                newBallName.slice(1);
+
+            document.getElementById("nextFullRebirth").textContent =
+                "Next Full Rebirth Grants: " +
+                capitalisedBallName +
+                " Ball";
+        }
+        else{
+            document.getElementById("nextFullRebirth").textContent =
+                "All Full Rebirth Balls Unlocked";
+        }
+    }
+}
+
+//new Ball methods
+let hasPersistentBall = false;
+function addPersistentBall(){
+    if(score >= 10000000 && !hasPersistentBall){
+        score -= 10000000;
+        document.getElementById("showScore").textContent = "Score: " + score;
+        new Ball("persistent");
+        document.getElementById("persistentBallButton").textContent = "MAX";
+        hasPersistentBall = true;
+    }
 }

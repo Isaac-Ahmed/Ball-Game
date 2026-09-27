@@ -17,6 +17,7 @@
             <p id = "showScore">Score: 1</p>
 
             <!--Allow shop to display correctly-->
+            <h3>Balls</h3>
             <div class = "shopItem">
                 <p>Buy Standard Ball</p>
                 <button onclick = "addStandardBall()" id = "standardButton">Cost: 1</button>
@@ -59,6 +60,8 @@
 
             <hr>
 
+            <h3>Upgrades</h3>
+
             <div class = "shopItem">
                 <p>Upgrade Clicks</p>
                 <button onclick = "upgradeClick()" id = "upgradeClickButton">Cost: 10</button>
@@ -91,6 +94,8 @@
 
             <hr>
 
+            <h3>Rebirths</h3>
+
             <div class = "shopItem">
                 <p id = "rebirthShow">Rebirths: 0</p>
                 <button onclick = "rebirth()">Rebirth</button>
@@ -102,6 +107,25 @@
                 <button onclick = "resetGame()">Click only if stuck</button>
             </div>
             <p>No rebirth gained</p>
+
+            <hr>
+
+            <h3>Full Rebirths</h3>
+
+            <div class = "shopItem">
+                <p>Full Rebirth</p>
+                <button onclick = "fullRebirth()" id = "fullRebirthButton">Cost: 100000000 and 10 Rebirths</button>
+            </div>
+            <p id = "nextFullRebirth">Next Full Rebirth Grants: Persistent Ball</p>
+
+            <hr id = "fullRebirthDivider">
+
+            <h3 id = "fullRebirthShop">Full Rebirth Balls</h3>
+
+            <div class = "shopItem" id = "persistent">
+                <p>Buy Persistent Ball</p>
+                <button onclick = "addPersistentBall()" id = "persistentBallButton">Cost: 10000000</button>
+            </div>
         </div>
         <script src = "script.js"></script>
     </body>

@@ -1,10 +1,34 @@
+/*Stop Overscrolling*/
+html, body{
+    overscroll-behavior: none;
+}
+
+html{
+    overflow-x: clip;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+html::-webkit-scrollbar{
+    display: none;
+}
+
+/*make all scroll bars on browsers not show*/
+html::-webkit-scrollbar{
+    display: none;
+}
+
+html{
+    scrollbar-width: none;
+}
+
 /*Get the grid to show on the gameArea side*/
 body{
     margin: 0; /*Remove the gap between the elements*/
     display: flex; /*Arrange using a flexbox*/
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden; /*Normally a browser creates a scrollbar if element goes beyond the bottom, shops this*/
+    width: 100%;
+    min-height: 100vh;
+    /*overflow: hidden; /*Normally a browser creates a scrollbar if element goes beyond the bottom, shops this*/
 }
 
 #gameArea{
@@ -18,14 +42,15 @@ body{
     
 
     background-size: 10% 10%;
-
-    position: relative; /*Allows the added balls to move respective to this rather than the whole window */
+    
+    position: sticky;
+    top: 0; /*Keeps the gamearea at the correct height*/
 }
 
 /*Get the shop to be the remaining 20%*/
 #shop{
     width: 20%;
-    height: 100%;
+    min-height: 100%;
     background-color: #1a1a1a;
     color: grey;
 
@@ -50,7 +75,7 @@ h1{
 }
 
 .shopItem button{
-    background-color: slategrey;
+    background-color: lightslategrey;
     border-radius: 11px;
 }
 
@@ -165,4 +190,34 @@ hr{
         0 0 10px purple,
         0 0 20px rgba(128, 0, 128, 0.7),
         0 0 35px rgba(128, 0, 128, 0.4);
+}
+
+/*Make all full rebirth stuff hidden*/
+#fullRebirthShop{
+    display: none;
+}
+
+#persistent{
+    display: none;
+}
+
+#fullRebirthDivider{
+    display: none;
+}
+
+/*Make anything hidden available to be shown*/
+.nowOnDisplay{
+    display: block !important;
+}
+.shopItem.nowOnDisplay{
+    display: flex !important;
+}
+
+/*CSS for rebirth balls*/
+.persistentBall{
+    position: absolute;
+    width: 4vmin;
+    height: 4vmin;
+    border-radius: 50%;
+    background-color: lightseagreen;
 }
