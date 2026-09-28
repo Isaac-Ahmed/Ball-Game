@@ -236,3 +236,10 @@ hr{
     transition: transform 0.5s;
     transform-origin: center;
 }
+
+/*Making the buttons on the popup look correct*/
+#resetBackground button{
+    background-color: lightslategrey;
+    border-radius: 11px;
+    margin: 5vmin;
+}
