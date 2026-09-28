@@ -205,6 +205,10 @@ hr{
     display: none;
 }
 
+#pulse{
+    display: none;
+}
+
 /*Make anything hidden available to be shown*/
 .nowOnDisplay{
     display: block !important;
@@ -220,4 +224,15 @@ hr{
     height: 4vmin;
     border-radius: 50%;
     background-color: lightseagreen;
+}
+
+.pulseBall{
+    position: absolute;
+    width: 2vmin;
+    height: 2vmin;
+    border-radius: 50%;
+    background-color: palevioletred;
+
+    transition: transform 0.5s;
+    transform-origin: center;
 }

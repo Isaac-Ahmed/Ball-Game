@@ -78,6 +78,10 @@ class Ball{
         if(this.type == "persistent"){
             this.element.className = "persistentBall";
         }
+        if(this.type == "pulse"){
+            this.element.className = "pulseBall";
+            this.justMoved = false;
+        }
         //Put element in the gameArea
         document.getElementById("gameArea").appendChild(this.element);
         balls.push(this);
@@ -96,6 +100,48 @@ class Ball{
 
             this.element.style.left = this.xPos + "px";
             this.element.style.top = this.yPos + "px";
+        }
+        else if(this.type == "pulse"){
+            this.element.onclick = () => {
+
+                if(!this.justMoved){
+
+                    //Stop it being clicked again
+                    this.justMoved = true;
+
+                    //Give click score
+                    score += (clickUpgrade * scoreMultiplier);
+                    this.clicked = true;
+                    this.addScore();
+
+                    //Move to new position first
+                    this.move();
+
+                    //Grow
+                    this.element.style.transform = "scale(2.5)";
+
+                    //Check collisions while it is large
+                    setTimeout(() => {
+
+                        for(let x of balls){
+                            if(x != this){
+                                this.checkCollision(x);
+                            }
+                        }
+
+                        //Shrink
+                        this.element.style.transform = "scale(1)";
+
+                    }, 500);
+
+                    //Allow it to be clicked again after shrinking
+                    setTimeout(() => {
+                        this.justMoved = false;
+                    }, 1000);
+                }
+            }
+
+            this.move();
         }
         else{
             this.element.onclick = () => {
@@ -132,18 +178,33 @@ class Ball{
     addScore(){
         let addedScore = 0;
         let showScoreAdded = 0;
-        if(this.clicked){showScoreAdded = clickUpgrade * scoreMultiplier;}
-        if(this.type == "standard" || this.type == "big" || this.type == "automover" || this.type == "persistent"){
+
+
+        // --------------------
+        // GENERAL CLICK SCORE
+        // WORKS FOR ALL BALL TYPES
+        // --------------------
+
+        if(this.clicked){
+            showScoreAdded += clickUpgrade * scoreMultiplier;
+        }
+
+
+        // --------------------
+        // BALL-SPECIFIC SCORE
+        // --------------------
+
+        if(this.type == "standard" || this.type == "big" || this.type == "automover"){
             addedScore++;
         }
         else if(this.type == "red"){
             addedScore += 2;
         }
         else if(this.type == "tiny"){
-            addedScore += 3 + income; //Gives tiny ball x2 income bonus
+            addedScore += 3 + income;
         }
         else if(this.type == "golden"){
-            addedScore +=  10;
+            addedScore += 10;
         }
         else if(this.type == "lucky"){
             let luckyChance = 0.1 + luckyUpgrade;
@@ -152,17 +213,42 @@ class Ball{
                 addedScore += jackpot;
             }
         }
+        else if(this.type == "persistent"){
+            addedScore += (1 + income) * scoreMultiplier;
+
+            if(this.clicked){
+                addedScore += clickUpgrade;
+            }
+        }
+        else if(this.type == "pulse"){
+            addedScore += 50;
+        }
+
+
+        // --------------------
+        // GENERAL SCORE MULTIPLIERS
+        // WORKS FOR ALL BALL TYPES
+        // --------------------
 
         addedScore += income;
-        addedScore = addedScore * scoreMultiplier;
+        addedScore *= scoreMultiplier;
         addedScore *= Math.pow(2, rebirths);
 
+
+        // --------------------
+        // ADD SCORE
+        // --------------------
+
         score += addedScore;
+
         showScoreAdded += addedScore;
+
         this.showScoreGain(showScoreAdded);
+
         this.clicked = false;
 
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("showScore").textContent =
+            "Score: " + score;
     }
 
     checkCollision(otherBall){
@@ -187,7 +273,7 @@ class Ball{
             }
         }
         else{
-            if(this.type != "persistent"){
+            if(this.type != "persistent" && this.type != "pulse"){
                 let thisRadius = this.element.offsetWidth / 2;
                 let otherRadius = otherBall.element.offsetWidth / 2;
 
@@ -416,6 +502,14 @@ addEventListener("keydown", function(ev){
         score = 0;
         document.getElementById("showScore").textContent = "Score: " + score;
     }
+    if(key == "r"){
+        rebirths++;
+        document.getElementById("rebirthShow").textContent =
+            "Rebirths: " + rebirths;
+
+        document.getElementById("rebithCostShow").textContent =
+            "Cost: " + Math.pow(3, rebirths) * 1000000;
+    }
 })
 
 //upgrade Buttons
@@ -525,6 +619,7 @@ function rebirth(){
         hasBlackHole = false;
         eaten = 0;
 
+        hasPulseBall = false;
 
         // --------------------
         // RESET UPGRADES
@@ -607,6 +702,7 @@ function rebirth(){
 
         document.getElementById("showScore").textContent =
             "Score: " + score;
+        document.getElementById("pulseBallButton").textContent = "Cost: 100000000";
 
 
         // --------------------
@@ -656,6 +752,8 @@ function resetGame(){
 
     hasBlackHole = false;
     eaten = 0;
+
+    hasPulseBall = false;
 
 
     // --------------------
@@ -739,6 +837,8 @@ function resetGame(){
 
     document.getElementById("showScore").textContent =
         "Score: " + score;
+    document.getElementById("pulseBallButton").textContent =
+        "Cost: 100000000";
 
 
     // --------------------
@@ -762,6 +862,7 @@ function resetGame(){
 
     document.getElementById("rebithCostShow").textContent =
         "Cost: " + Math.pow(3, rebirths) * 1000000;
+    
 }
 
 function fullRebirth(){
@@ -789,6 +890,7 @@ function fullRebirth(){
         eaten = 0;
 
         hasPersistentBall = false;
+        hasPulseBall = false;
 
 
         // --------------------
@@ -875,6 +977,8 @@ function fullRebirth(){
 
         document.getElementById("showScore").textContent =
             "Score: " + score;
+        document.getElementById("pulseBallButton").textContent =
+            "Cost: 100000000";
 
 
         // --------------------
@@ -925,7 +1029,10 @@ function fullRebirth(){
             document.getElementById("persistent")
                 .classList.add("nowOnDisplay");
         }
-
+        else if(fullRebirths == 2){
+            document.getElementById("pulse")
+                .classList.add("nowOnDisplay");
+        }
 
         // --------------------
         // SHOW NEXT BALL UNLOCK
@@ -953,6 +1060,8 @@ function fullRebirth(){
 
 //new Ball methods
 let hasPersistentBall = false;
+let hasPulseBall = false;
+
 function addPersistentBall(){
     if(score >= 10000000 && !hasPersistentBall){
         score -= 10000000;
@@ -960,5 +1069,15 @@ function addPersistentBall(){
         new Ball("persistent");
         document.getElementById("persistentBallButton").textContent = "MAX";
         hasPersistentBall = true;
+    }
+}
+
+function addPulseBall(){
+    if(score >= 100000000 && !hasPulseBall){
+        score -= 100000000;
+        document.getElementById("showScore").textContent = "Score: " + score;
+        new Ball("pulse");
+        document.getElementById("pulseBallButton").textContent = "MAX";
+        hasPulseBall = true;
     }
 }
