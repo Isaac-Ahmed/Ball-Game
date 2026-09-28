@@ -161,17 +161,15 @@ function loadGame(){
 
 
     // --------------------
-    // CALCULATE FULL REBIRTH COST
+    // CALCULATE PRESTIGE COST
     // --------------------
 
     fullRebirthCost =
-        100000000 * Math.pow(5, fullRebirths);
+        500000000000 * Math.pow(5, fullRebirths);
 
 
     // --------------------
     // CLEAR CURRENT BALLS
-    // PREVENT DUPLICATES IF LOADGAME
-    // IS EVER CALLED MORE THAN ONCE
     // --------------------
 
     while(balls.length > 0){
@@ -192,7 +190,6 @@ function loadGame(){
 
     // --------------------
     // RECALCULATE BALL COUNTERS
-    // FROM ACTUAL SAVED BALLS
     // --------------------
 
     noOfGoldenBalls = 0;
@@ -201,6 +198,7 @@ function loadGame(){
     hasBlackHole = false;
     hasPersistentBall = false;
     hasPulseBall = false;
+
 
     for(let ball of balls){
 
@@ -231,18 +229,19 @@ function loadGame(){
     // --------------------
 
     document.getElementById("showScore").textContent =
-        "Score: " + score;
+        "Score: " + showValue(score);
 
     document.getElementById("rebirthShow").textContent =
         "Rebirths: " + rebirths;
 
     document.getElementById("rebithCostShow").textContent =
-        "Cost: " +
-        Math.pow(3, rebirths) * 1000000;
+        "Cost: " + showValue(
+            Math.pow(4, rebirths) * 1000000
+        );
 
     document.getElementById("fullRebirthButton").textContent =
         "Cost: " +
-        fullRebirthCost +
+        showValue(fullRebirthCost) +
         " and 10 Rebirths";
 
 
@@ -251,48 +250,57 @@ function loadGame(){
     // --------------------
 
     document.getElementById("standardButton").textContent =
-        "Cost: " + standardBallScore;
+        "Cost: " + showValue(standardBallScore);
 
     document.getElementById("bigButton").textContent =
-        "Cost: " + bigBallScore;
+        "Cost: " + showValue(bigBallScore);
 
     document.getElementById("redButton").textContent =
-        "Cost: " + redBallScore;
+        "Cost: " + showValue(redBallScore);
 
     document.getElementById("automoverButton").textContent =
-        "Cost: " + automoverScore;
+        "Cost: " + showValue(automoverScore);
 
     document.getElementById("tinyButton").textContent =
-        "Cost: " + tinyBallScore;
+        "Cost: " + showValue(tinyBallScore);
 
 
     if(noOfGoldenBalls >= 10){
+
         document.getElementById("goldenButton").textContent =
             "MAX";
     }
+
     else{
+
         document.getElementById("goldenButton").textContent =
-            "Cost: " + goldenBallScore;
+            "Cost: " + showValue(goldenBallScore);
     }
 
 
     if(noOfLuckyBall >= 5){
+
         document.getElementById("luckyButton").textContent =
             "MAX";
     }
+
     else{
+
         document.getElementById("luckyButton").textContent =
-            "Cost: " + luckyBallScore;
+            "Cost: " + showValue(luckyBallScore);
     }
 
 
     if(hasBlackHole){
+
         document.getElementById("blackHoleButton").textContent =
             "MAX";
     }
+
     else{
+
         document.getElementById("blackHoleButton").textContent =
-            "Cost: 100000000";
+            "Cost: " + showValue(100000000);
     }
 
 
@@ -301,13 +309,13 @@ function loadGame(){
     // --------------------
 
     document.getElementById("upgradeClickButton").textContent =
-        "Cost: " + clickCost;
+        "Cost: " + showValue(clickCost);
 
     document.getElementById("upgradeIncomeButton").textContent =
-        "Cost: " + incomeCost;
+        "Cost: " + showValue(incomeCost);
 
     document.getElementById("upgradeMultiplierButton").textContent =
-        "Cost: " + scoreMultiplierCost;
+        "Cost: " + showValue(scoreMultiplierCost);
 
     document.getElementById("showMultiplier").textContent =
         "Upgrade Multiplier x" + scoreMultiplier;
@@ -321,11 +329,13 @@ function loadGame(){
             "upgradeAutomoverButton"
         ).textContent = "MAX";
     }
+
     else{
+
         document.getElementById(
             "upgradeAutomoverButton"
         ).textContent =
-            "Cost: " + automoverUpgradeCost;
+            "Cost: " + showValue(automoverUpgradeCost);
     }
 
 
@@ -337,22 +347,24 @@ function loadGame(){
             "upgradeLuckyBallsButton"
         ).textContent = "MAX";
     }
+
     else{
+
         document.getElementById(
             "upgradeLuckyBallsButton"
         ).textContent =
-            "Cost: " + luckyCost;
+            "Cost: " + showValue(luckyCost);
     }
 
 
     document.getElementById(
         "upgradeJackpotButton"
     ).textContent =
-        "Cost: " + jackpotCost;
+        "Cost: " + showValue(jackpotCost);
 
 
     // --------------------
-    // RESTORE FULL REBIRTH SHOP
+    // RESTORE PRESTIGE SHOP
     // --------------------
 
     if(fullRebirths >= 1){
@@ -380,37 +392,43 @@ function loadGame(){
 
 
     // --------------------
-    // UPDATE FULL REBIRTH BALL BUTTONS
+    // UPDATE PRESTIGE BALL BUTTONS
     // --------------------
 
     if(hasPersistentBall){
+
         document.getElementById(
             "persistentBallButton"
         ).textContent = "MAX";
     }
+
     else{
+
         document.getElementById(
             "persistentBallButton"
         ).textContent =
-            "Cost: 10000000";
+            "Cost: " + showValue(10000000);
     }
 
 
     if(hasPulseBall){
+
         document.getElementById(
             "pulseBallButton"
         ).textContent = "MAX";
     }
+
     else{
+
         document.getElementById(
             "pulseBallButton"
         ).textContent =
-            "Cost: 100000000";
+            "Cost: " + showValue(100000000);
     }
 
 
     // --------------------
-    // SHOW NEXT FULL REBIRTH BALL
+    // SHOW NEXT PRESTIGE BALL
     // --------------------
 
     if(fullRebirths < newBalls.length){
@@ -425,15 +443,17 @@ function loadGame(){
         document.getElementById(
             "nextFullRebirth"
         ).textContent =
-            "Next Full Rebirth Grants: " +
+            "Next Prestige Grants: " +
             capitalisedBallName +
             " Ball";
     }
+
     else{
+
         document.getElementById(
             "nextFullRebirth"
         ).textContent =
-            "All Full Rebirth Balls Unlocked";
+            "All Prestige Balls Unlocked";
     }
 }
 

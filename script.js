@@ -2,7 +2,7 @@
 let rebirths = 0;
 let newBalls = ["persistent", "pulse", "corner", "orbiter", "chain"];
 let fullRebirths = 0;
-let fullRebirthCost = 100000000;
+let fullRebirthCost = 500000000000;
 let justFullRebirthed = false;
 
 //upgrade varables
@@ -232,7 +232,7 @@ class Ball{
 
         addedScore += income;
         addedScore *= scoreMultiplier;
-        addedScore *= Math.pow(2, rebirths);
+        addedScore *= Math.pow(1.5, rebirths);
 
 
         // --------------------
@@ -248,7 +248,7 @@ class Ball{
         this.clicked = false;
 
         document.getElementById("showScore").textContent =
-            "Score: " + score;
+            "Score: " + showValue(score);
     }
 
     checkCollision(otherBall){
@@ -301,13 +301,13 @@ class Ball{
                         if(this.type == "lucky"){
                             noOfLuckyBall--;
                             document.getElementById("luckyButton").textContent =
-                                "Cost: " + luckyBallScore;
+                                "Cost: " + showValue(luckyBallScore);
                         }
 
                         if(this.type == "golden"){
                             noOfGoldenBalls--;
                             document.getElementById("goldenButton").textContent =
-                                "Cost: " + goldenBallScore;
+                                "Cost: " + showValue(goldenBallScore);
                         }
 
                         eaten++;
@@ -368,7 +368,7 @@ class Ball{
         let gainText = document.createElement("div");
 
         gainText.className = "gainText";
-        gainText.textContent = "+" + amount;
+        gainText.textContent = "+" + showValue(amount);
 
         gameArea.appendChild(gainText);
 
@@ -407,8 +407,8 @@ function addStandardBall(){
             standardBallScore = Math.floor(standardBallScore * 1.5);
         }
     }
-    document.getElementById("standardButton").textContent = "Cost: " + standardBallScore;
-    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("standardButton").textContent = "Cost: " + showValue(standardBallScore);
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
 }
 
 function addBigBall(){
@@ -417,8 +417,8 @@ function addBigBall(){
         new Ball("big");
         bigBallScore = bigBallScore * 3;
     }
-    document.getElementById("bigButton").textContent = "Cost: " + bigBallScore;
-    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("bigButton").textContent = "Cost: " + showValue(bigBallScore);
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
 }
 
 function addRedBall(){
@@ -426,8 +426,8 @@ function addRedBall(){
         score -= redBallScore;
         new Ball("red");
         redBallScore = redBallScore * 3;
-        document.getElementById("redButton").textContent = "Cost: " + redBallScore;
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("redButton").textContent = "Cost: " + showValue(redBallScore);
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
     }
 }
 
@@ -436,8 +436,8 @@ function addAutomover(){
         score -= automoverScore;
         new Ball("automover");
         automoverScore = automoverScore * 2;
-        document.getElementById("automoverButton").textContent = "Cost: " + automoverScore;
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("automoverButton").textContent = "Cost: " + showValue(automoverScore);
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
     }
 }
 
@@ -448,8 +448,8 @@ function addGoldenBall(){
         new Ball("golden");
         goldenBallScore = goldenBallScore * 3;
         if(noOfGoldenBalls == 10){document.getElementById("goldenButton").textContent = "MAX";}
-        else{document.getElementById("goldenButton").textContent = "Cost: " + goldenBallScore;}
-        document.getElementById("showScore").textContent = "Score: " + score;
+        else{document.getElementById("goldenButton").textContent = "Cost: " + showValue(goldenBallScore);}
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
     }
 }
 
@@ -459,8 +459,8 @@ function addTinyBall(){
         new Ball("tiny");
         tinyBallScore *= 3;
     }
-    document.getElementById("tinyButton").textContent = "Cost: " + tinyBallScore;
-    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("tinyButton").textContent = "Cost: " + showValue(tinyBallScore);
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
 }
 
 function addLuckyBall(){
@@ -474,9 +474,9 @@ function addLuckyBall(){
         document.getElementById("luckyButton").textContent = "MAX";
     }
     else{
-        document.getElementById("luckyButton").textContent = "Cost: " + luckyBallScore;
+        document.getElementById("luckyButton").textContent = "Cost: " + showValue(luckyBallScore);
     }
-    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
 }
 
 function addBlackHole(){
@@ -484,7 +484,7 @@ function addBlackHole(){
         score -= 100000000;
         document.getElementById("blackHoleButton").textContent = "MAX";
         new Ball("blackHole");
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
         hasBlackHole = true;
     }
 }
@@ -508,7 +508,7 @@ addEventListener("keydown", function(ev){
             "Rebirths: " + rebirths;
 
         document.getElementById("rebithCostShow").textContent =
-            "Cost: " + Math.pow(3, rebirths) * 1000000;
+            "Cost: " + showValue(Math.pow(4, rebirths) * 1000000);
     }
 })
 
@@ -521,8 +521,8 @@ function upgradeClick(){
         else if(clickCost <= 500){clickCost += 50;}
         else if(clickCost <= 1000){clickCost += 150;}
         else{clickCost = Math.floor(clickCost * 1.5);}
-        document.getElementById("upgradeClickButton").textContent = "Cost: " + clickCost;
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("upgradeClickButton").textContent = "Cost: " + showValue(clickCost);
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
     }
 }
 
@@ -532,8 +532,8 @@ function upgradeIncome(){
         score -= incomeCost;
         incomeCost = incomeCost * 2;
     }
-    document.getElementById("upgradeIncomeButton").textContent = "Cost: " + incomeCost;
-    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("upgradeIncomeButton").textContent = "Cost: " + showValue(incomeCost);
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
 }
 
 function upgradeAutomover(){
@@ -546,12 +546,12 @@ function upgradeAutomover(){
             x.updateAutomoverTimer();
         }
     }
-    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
     if(automoverTimer == 100){
         document.getElementById("upgradeAutomoverButton").textContent = "MAX";
     }
     else{
-        document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + automoverUpgradeCost;
+        document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + showValue(automoverUpgradeCost);
     }
 }
 
@@ -561,9 +561,9 @@ function upgradeMultiplier(){
         score -= scoreMultiplierCost;
         scoreMultiplierCost = scoreMultiplierCost * 2;
     }
-    document.getElementById("showScore").textContent = "Score: " + score;
-    document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + scoreMultiplierCost;
-    document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + scoreMultiplier;
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
+    document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + showValue(scoreMultiplierCost);
+    document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + showValue(scoreMultiplier);
 }
 
 function upgradeLuckyBalls(){
@@ -573,14 +573,14 @@ function upgradeLuckyBalls(){
         luckyCost = Math.floor(luckyCost * 1.5);
     }
 
-    document.getElementById("showScore").textContent = "Score: " + score;
+    document.getElementById("showScore").textContent = "Score: " + showValue(score);
 
     if(luckyUpgrade >= 0.4){
         luckyUpgrade = 0.4;
         document.getElementById("upgradeLuckyBallsButton").textContent = "MAX";
     }
     else{
-        document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + luckyCost;
+        document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + showValue(luckyCost);
     }
 }
 
@@ -589,15 +589,16 @@ function increaseJackpot(){
         jackpot *= 4;
         score -= jackpotCost;
         jackpotCost *= 5;
-        document.getElementById("upgradeJackpotButton").textContent = "Cost: " + jackpotCost;
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("upgradeJackpotButton").textContent = "Cost: " + showValue(jackpotCost);
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
     }
 }
 
 //Rebirth
 
 function rebirth(){
-    if(score >= (Math.pow(3, rebirths) * 1000000)){
+
+    if(score >= (Math.pow(4, rebirths) * 1000000)){
 
         // --------------------
         // RESET BALL SHOP
@@ -620,6 +621,7 @@ function rebirth(){
         eaten = 0;
 
         hasPulseBall = false;
+
 
         // --------------------
         // RESET UPGRADES
@@ -656,53 +658,55 @@ function rebirth(){
         // --------------------
 
         document.getElementById("blackHoleButton").textContent =
-            "Cost: 100000000";
+            "Cost: " + showValue(100000000);
 
         document.getElementById("upgradeClickButton").textContent =
-            "Cost: " + clickCost;
+            "Cost: " + showValue(clickCost);
 
         document.getElementById("upgradeLuckyBallsButton").textContent =
-            "Cost: " + luckyCost;
+            "Cost: " + showValue(luckyCost);
 
         document.getElementById("upgradeMultiplierButton").textContent =
-            "Cost: " + scoreMultiplierCost;
+            "Cost: " + showValue(scoreMultiplierCost);
 
         document.getElementById("showMultiplier").textContent =
             "Upgrade Multiplier x" + scoreMultiplier;
 
         document.getElementById("upgradeAutomoverButton").textContent =
-            "Cost: " + automoverUpgradeCost;
+            "Cost: " + showValue(automoverUpgradeCost);
 
         document.getElementById("upgradeIncomeButton").textContent =
-            "Cost: " + incomeCost;
+            "Cost: " + showValue(incomeCost);
 
         document.getElementById("luckyButton").textContent =
-            "Cost: " + luckyBallScore;
+            "Cost: " + showValue(luckyBallScore);
 
         document.getElementById("goldenButton").textContent =
-            "Cost: " + goldenBallScore;
+            "Cost: " + showValue(goldenBallScore);
 
         document.getElementById("tinyButton").textContent =
-            "Cost: " + tinyBallScore;
+            "Cost: " + showValue(tinyBallScore);
 
         document.getElementById("automoverButton").textContent =
-            "Cost: " + automoverScore;
+            "Cost: " + showValue(automoverScore);
 
         document.getElementById("redButton").textContent =
-            "Cost: " + redBallScore;
+            "Cost: " + showValue(redBallScore);
 
         document.getElementById("bigButton").textContent =
-            "Cost: " + bigBallScore;
+            "Cost: " + showValue(bigBallScore);
 
         document.getElementById("standardButton").textContent =
-            "Cost: " + standardBallScore;
+            "Cost: " + showValue(standardBallScore);
 
         document.getElementById("upgradeJackpotButton").textContent =
-            "Cost: " + jackpotCost;
+            "Cost: " + showValue(jackpotCost);
 
         document.getElementById("showScore").textContent =
-            "Score: " + score;
-        document.getElementById("pulseBallButton").textContent = "Cost: 100000000";
+            "Score: " + showValue(score);
+
+        document.getElementById("pulseBallButton").textContent =
+            "Cost: " + showValue(100000000);
 
 
         // --------------------
@@ -727,7 +731,9 @@ function rebirth(){
             "Rebirths: " + rebirths;
 
         document.getElementById("rebithCostShow").textContent =
-            "Cost: " + Math.pow(3, rebirths) * 1000000;
+            "Cost: " + showValue(
+                Math.pow(4, rebirths) * 1000000
+            );
     }
 }
 
@@ -791,54 +797,55 @@ function resetGame(){
     // --------------------
 
     document.getElementById("blackHoleButton").textContent =
-        "Cost: 100000000";
+        "Cost: " + showValue(100000000);
 
     document.getElementById("upgradeClickButton").textContent =
-        "Cost: " + clickCost;
+        "Cost: " + showValue(clickCost);
 
     document.getElementById("upgradeLuckyBallsButton").textContent =
-        "Cost: " + luckyCost;
+        "Cost: " + showValue(luckyCost);
 
     document.getElementById("upgradeMultiplierButton").textContent =
-        "Cost: " + scoreMultiplierCost;
+        "Cost: " + showValue(scoreMultiplierCost);
 
     document.getElementById("showMultiplier").textContent =
         "Upgrade Multiplier x" + scoreMultiplier;
 
     document.getElementById("upgradeAutomoverButton").textContent =
-        "Cost: " + automoverUpgradeCost;
+        "Cost: " + showValue(automoverUpgradeCost);
 
     document.getElementById("upgradeIncomeButton").textContent =
-        "Cost: " + incomeCost;
+        "Cost: " + showValue(incomeCost);
 
     document.getElementById("luckyButton").textContent =
-        "Cost: " + luckyBallScore;
+        "Cost: " + showValue(luckyBallScore);
 
     document.getElementById("goldenButton").textContent =
-        "Cost: " + goldenBallScore;
+        "Cost: " + showValue(goldenBallScore);
 
     document.getElementById("tinyButton").textContent =
-        "Cost: " + tinyBallScore;
+        "Cost: " + showValue(tinyBallScore);
 
     document.getElementById("automoverButton").textContent =
-        "Cost: " + automoverScore;
+        "Cost: " + showValue(automoverScore);
 
     document.getElementById("redButton").textContent =
-        "Cost: " + redBallScore;
+        "Cost: " + showValue(redBallScore);
 
     document.getElementById("bigButton").textContent =
-        "Cost: " + bigBallScore;
+        "Cost: " + showValue(bigBallScore);
 
     document.getElementById("standardButton").textContent =
-        "Cost: " + standardBallScore;
+        "Cost: " + showValue(standardBallScore);
 
     document.getElementById("upgradeJackpotButton").textContent =
-        "Cost: " + jackpotCost;
+        "Cost: " + showValue(jackpotCost);
 
     document.getElementById("showScore").textContent =
-        "Score: " + score;
+        "Score: " + showValue(score);
+
     document.getElementById("pulseBallButton").textContent =
-        "Cost: 100000000";
+        "Cost: " + showValue(100000000);
 
 
     // --------------------
@@ -861,8 +868,9 @@ function resetGame(){
         "Rebirths: " + rebirths;
 
     document.getElementById("rebithCostShow").textContent =
-        "Cost: " + Math.pow(3, rebirths) * 1000000;
-    
+        "Cost: " + showValue(
+            Math.pow(4, rebirths) * 1000000
+        );
 }
 
 function fullRebirth(){
@@ -928,57 +936,58 @@ function fullRebirth(){
         // --------------------
 
         document.getElementById("blackHoleButton").textContent =
-            "Cost: 100000000";
+            "Cost: " + showValue(100000000);
 
         document.getElementById("persistentBallButton").textContent =
-            "Cost: 10000000";
+            "Cost: " + showValue(10000000);
 
         document.getElementById("upgradeClickButton").textContent =
-            "Cost: " + clickCost;
+            "Cost: " + showValue(clickCost);
 
         document.getElementById("upgradeLuckyBallsButton").textContent =
-            "Cost: " + luckyCost;
+            "Cost: " + showValue(luckyCost);
 
         document.getElementById("upgradeMultiplierButton").textContent =
-            "Cost: " + scoreMultiplierCost;
+            "Cost: " + showValue(scoreMultiplierCost);
 
         document.getElementById("showMultiplier").textContent =
             "Upgrade Multiplier x" + scoreMultiplier;
 
         document.getElementById("upgradeAutomoverButton").textContent =
-            "Cost: " + automoverUpgradeCost;
+            "Cost: " + showValue(automoverUpgradeCost);
 
         document.getElementById("upgradeIncomeButton").textContent =
-            "Cost: " + incomeCost;
+            "Cost: " + showValue(incomeCost);
 
         document.getElementById("luckyButton").textContent =
-            "Cost: " + luckyBallScore;
+            "Cost: " + showValue(luckyBallScore);
 
         document.getElementById("goldenButton").textContent =
-            "Cost: " + goldenBallScore;
+            "Cost: " + showValue(goldenBallScore);
 
         document.getElementById("tinyButton").textContent =
-            "Cost: " + tinyBallScore;
+            "Cost: " + showValue(tinyBallScore);
 
         document.getElementById("automoverButton").textContent =
-            "Cost: " + automoverScore;
+            "Cost: " + showValue(automoverScore);
 
         document.getElementById("redButton").textContent =
-            "Cost: " + redBallScore;
+            "Cost: " + showValue(redBallScore);
 
         document.getElementById("bigButton").textContent =
-            "Cost: " + bigBallScore;
+            "Cost: " + showValue(bigBallScore);
 
         document.getElementById("standardButton").textContent =
-            "Cost: " + standardBallScore;
+            "Cost: " + showValue(standardBallScore);
 
         document.getElementById("upgradeJackpotButton").textContent =
-            "Cost: " + jackpotCost;
+            "Cost: " + showValue(jackpotCost);
 
         document.getElementById("showScore").textContent =
-            "Score: " + score;
+            "Score: " + showValue(score);
+
         document.getElementById("pulseBallButton").textContent =
-            "Cost: 100000000";
+            "Cost: " + showValue(100000000);
 
 
         // --------------------
@@ -1000,11 +1009,13 @@ function fullRebirth(){
             "Rebirths: " + rebirths;
 
         document.getElementById("rebithCostShow").textContent =
-            "Cost: " + Math.pow(3, rebirths) * 1000000;
+            "Cost: " + showValue(
+                Math.pow(4, rebirths) * 1000000
+            );
 
 
         // --------------------
-        // INCREASE FULL REBIRTH
+        // INCREASE PRESTIGE
         // --------------------
 
         fullRebirths++;
@@ -1012,14 +1023,17 @@ function fullRebirth(){
         fullRebirthCost *= 5;
 
         document.getElementById("fullRebirthButton").textContent =
-            "Cost: " + fullRebirthCost + " and 10 Rebirths";
+            "Cost: " +
+            showValue(fullRebirthCost) +
+            " and 10 Rebirths";
 
 
         // --------------------
-        // UNLOCK FULL REBIRTH SHOP
+        // UNLOCK PRESTIGE SHOP
         // --------------------
 
         if(fullRebirths == 1){
+
             document.getElementById("fullRebirthDivider")
                 .classList.add("nowOnDisplay");
 
@@ -1029,10 +1043,13 @@ function fullRebirth(){
             document.getElementById("persistent")
                 .classList.add("nowOnDisplay");
         }
+
         else if(fullRebirths == 2){
+
             document.getElementById("pulse")
                 .classList.add("nowOnDisplay");
         }
+
 
         // --------------------
         // SHOW NEXT BALL UNLOCK
@@ -1047,13 +1064,15 @@ function fullRebirth(){
                 newBallName.slice(1);
 
             document.getElementById("nextFullRebirth").textContent =
-                "Next Full Rebirth Grants: " +
+                "Next Prestige Grants: " +
                 capitalisedBallName +
                 " Ball";
         }
+
         else{
+
             document.getElementById("nextFullRebirth").textContent =
-                "All Full Rebirth Balls Unlocked";
+                "All Prestige Balls Unlocked";
         }
     }
 }
@@ -1065,7 +1084,7 @@ let hasPulseBall = false;
 function addPersistentBall(){
     if(score >= 10000000 && !hasPersistentBall){
         score -= 10000000;
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
         new Ball("persistent");
         document.getElementById("persistentBallButton").textContent = "MAX";
         hasPersistentBall = true;
@@ -1075,9 +1094,46 @@ function addPersistentBall(){
 function addPulseBall(){
     if(score >= 100000000 && !hasPulseBall){
         score -= 100000000;
-        document.getElementById("showScore").textContent = "Score: " + score;
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
         new Ball("pulse");
         document.getElementById("pulseBallButton").textContent = "MAX";
         hasPulseBall = true;
     }
+}
+
+//method for showing the numbers on the HTML
+function showValue(value){
+    let x;
+
+    if(value >= 1000000000000000){
+        x = value / 1000000000000000;
+        x = Math.round(x * 100) / 100;
+        return x + "q";
+    }
+
+    else if(value >= 1000000000000){
+        x = value / 1000000000000;
+        x = Math.round(x * 100) / 100;
+        return x + "t";
+    }
+
+    else if(value >= 1000000000){
+        x = value / 1000000000;
+        x = Math.round(x * 100) / 100;
+        return x + "b";
+    }
+
+    else if(value >= 1000000){
+        x = value / 1000000;
+        x = Math.round(x * 100) / 100;
+        return x + "m";
+    }
+
+    else if(value >= 1000){
+        x = value / 1000;
+        x = Math.round(x * 100) / 100;
+        return x + "k";
+    }
+
+    return value;
 }
