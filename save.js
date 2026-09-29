@@ -519,3 +519,46 @@ function fullResetGame(){
 
     document.body.appendChild(background);
 }
+
+function getCode(){
+    //Make sure the newest game state is saved
+    saveGame();
+
+    //Get the JSON save
+    let save = localStorage.getItem("ballGameSave");
+
+    //Turn it into a code
+    let code = btoa(save);
+
+    //Put the code in the box
+    document.getElementById("codeInput").value = code;
+}
+
+function loadCode(){
+
+    let code =
+        document.getElementById("codeInput").value;
+
+    try{
+
+        //Turn the code back into JSON
+        let save = atob(code);
+
+        //Check that it is actually valid JSON
+        JSON.parse(save);
+
+        //Replace the current save
+        localStorage.setItem(
+            "ballGameSave",
+            save
+        );
+
+        //Reload the page so loadGame() uses it
+        location.reload();
+    }
+
+    catch{
+        document.getElementById("codeInput").value =
+            "Invalid Code";
+    }
+}

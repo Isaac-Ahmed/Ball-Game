@@ -198,7 +198,7 @@ class Ball{
             addedScore++;
         }
         else if(this.type == "red"){
-            addedScore += 2;
+            addedScore += 4;
         }
         else if(this.type == "tiny"){
             addedScore += 3 + income;
@@ -1105,6 +1105,13 @@ function addPulseBall(){
 function showValue(value){
     let x;
 
+    if(value >= 1000000000000000000){
+        let index = Math.floor(Math.log10(value) / 3);
+        x = value / Math.pow(1000, index);
+        x = Math.round(x * 100) / 100;
+        return x + getSuffix(value);
+    }
+
     if(value >= 1000000000000000){
         x = value / 1000000000000000;
         x = Math.round(x * 100) / 100;
@@ -1134,6 +1141,16 @@ function showValue(value){
         x = Math.round(x * 100) / 100;
         return x + "k";
     }
-
+    value = Math.round(value * 10) / 10;
     return value;
+}
+
+function getSuffix(value){
+    let index = Math.floor(Math.log10(value) / 3);
+    let suffixIndex = index - 6;
+    let firstLetter =
+        String.fromCharCode(97 + Math.floor(suffixIndex / 26));
+    let secondLetter =
+        String.fromCharCode(97 + (suffixIndex % 26));
+    return firstLetter + secondLetter;
 }

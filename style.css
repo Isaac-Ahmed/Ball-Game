@@ -79,6 +79,12 @@ h1{
     border-radius: 11px;
 }
 
+.shopItem input{
+    background-color: lightgrey;
+    border-radius: 11px;
+    color: black;
+}
+
 /*Get the ball to be in the correct postion*/
 .standardBall{
     position: absolute;
