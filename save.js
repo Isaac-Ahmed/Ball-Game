@@ -1,4 +1,5 @@
 function saveGame(){
+
     let saveData = {
 
         // --------------------
@@ -66,6 +67,7 @@ function saveGame(){
         // --------------------
 
         balls: balls.map(ball => ball.type)
+
     };
 
 
@@ -178,27 +180,45 @@ function loadGame(){
 
 
     // --------------------
+    // RESET BALL COUNTERS
+    // BEFORE LOADING
+    // --------------------
+
+    noOfGoldenBalls = 0;
+    noOfLuckyBall = 0;
+    noOfCornerBalls = 0;
+
+    hasBlackHole = false;
+    hasPersistentBall = false;
+    hasPulseBall = false;
+
+
+    // --------------------
     // RECREATE SAVED BALLS
     // --------------------
 
     let savedBalls = saveData.balls ?? [];
 
     for(let type of savedBalls){
+
+        /*
+        Corner needs its counter increased BEFORE
+        creating it because the constructor uses
+        noOfCornerBalls to decide which corner
+        it should be placed in.
+        */
+
+        if(type == "corner"){
+            noOfCornerBalls++;
+        }
+
         new Ball(type);
     }
 
 
     // --------------------
-    // RECALCULATE BALL COUNTERS
+    // RECALCULATE OTHER BALL COUNTERS
     // --------------------
-
-    noOfGoldenBalls = 0;
-    noOfLuckyBall = 0;
-
-    hasBlackHole = false;
-    hasPersistentBall = false;
-    hasPulseBall = false;
-
 
     for(let ball of balls){
 
@@ -269,12 +289,14 @@ function loadGame(){
 
         document.getElementById("goldenButton").textContent =
             "MAX";
+
     }
 
     else{
 
         document.getElementById("goldenButton").textContent =
             "Cost: " + showValue(goldenBallScore);
+
     }
 
 
@@ -282,12 +304,14 @@ function loadGame(){
 
         document.getElementById("luckyButton").textContent =
             "MAX";
+
     }
 
     else{
 
         document.getElementById("luckyButton").textContent =
             "Cost: " + showValue(luckyBallScore);
+
     }
 
 
@@ -295,12 +319,14 @@ function loadGame(){
 
         document.getElementById("blackHoleButton").textContent =
             "MAX";
+
     }
 
     else{
 
         document.getElementById("blackHoleButton").textContent =
             "Cost: " + showValue(100000000);
+
     }
 
 
@@ -328,6 +354,7 @@ function loadGame(){
         document.getElementById(
             "upgradeAutomoverButton"
         ).textContent = "MAX";
+
     }
 
     else{
@@ -336,6 +363,7 @@ function loadGame(){
             "upgradeAutomoverButton"
         ).textContent =
             "Cost: " + showValue(automoverUpgradeCost);
+
     }
 
 
@@ -346,6 +374,7 @@ function loadGame(){
         document.getElementById(
             "upgradeLuckyBallsButton"
         ).textContent = "MAX";
+
     }
 
     else{
@@ -354,6 +383,7 @@ function loadGame(){
             "upgradeLuckyBallsButton"
         ).textContent =
             "Cost: " + showValue(luckyCost);
+
     }
 
 
@@ -380,6 +410,7 @@ function loadGame(){
         document.getElementById(
             "persistent"
         ).classList.add("nowOnDisplay");
+
     }
 
 
@@ -388,6 +419,16 @@ function loadGame(){
         document.getElementById(
             "pulse"
         ).classList.add("nowOnDisplay");
+
+    }
+
+
+    if(fullRebirths >= 3){
+
+        document.getElementById(
+            "corner"
+        ).classList.add("nowOnDisplay");
+
     }
 
 
@@ -400,6 +441,7 @@ function loadGame(){
         document.getElementById(
             "persistentBallButton"
         ).textContent = "MAX";
+
     }
 
     else{
@@ -408,6 +450,7 @@ function loadGame(){
             "persistentBallButton"
         ).textContent =
             "Cost: " + showValue(10000000);
+
     }
 
 
@@ -416,6 +459,7 @@ function loadGame(){
         document.getElementById(
             "pulseBallButton"
         ).textContent = "MAX";
+
     }
 
     else{
@@ -424,6 +468,33 @@ function loadGame(){
             "pulseBallButton"
         ).textContent =
             "Cost: " + showValue(100000000);
+
+    }
+
+
+    // --------------------
+    // UPDATE CORNER BALL BUTTON
+    // --------------------
+
+    if(noOfCornerBalls >= 4){
+
+        document.getElementById(
+            "cornerBallButton"
+        ).textContent = "MAX";
+
+    }
+
+    else{
+
+        document.getElementById(
+            "cornerBallButton"
+        ).textContent =
+            "Cost: " +
+            showValue(
+                75000000 +
+                (noOfCornerBalls * 25000000)
+            );
+
     }
 
 
@@ -446,6 +517,7 @@ function loadGame(){
             "Next Prestige Grants: " +
             capitalisedBallName +
             " Ball";
+
     }
 
     else{
@@ -454,6 +526,7 @@ function loadGame(){
             "nextFullRebirth"
         ).textContent =
             "All Prestige Balls Unlocked";
+
     }
 }
 

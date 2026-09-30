@@ -82,6 +82,12 @@ class Ball{
             this.element.className = "pulseBall";
             this.justMoved = false;
         }
+        if(this.type == "corner"){
+            this.element.className = "cornerBall";
+        }
+        if(this.type == "smallCorner"){
+            this.element.className = "smallCornerBall";
+        }
         //Put element in the gameArea
         document.getElementById("gameArea").appendChild(this.element);
         balls.push(this);
@@ -93,6 +99,14 @@ class Ball{
             }, automoverTimer);
 
             this.move();
+        }
+        else if(this.type == "smallCorner"){
+            this.interval = setInterval(() => {
+                this.move();
+                this.addScore();
+            }, 5000);
+
+            this.move();    
         }
         else if(this.type == "blackHole"){
             this.xPos = (gameArea.clientWidth - this.element.offsetWidth) / 2;
@@ -142,6 +156,26 @@ class Ball{
             }
 
             this.move();
+        }
+        else if(this.type == "corner"){
+            if(noOfCornerBalls == 1){
+                this.xPos = 0;
+                this.yPos = 0;
+            }
+            else if(noOfCornerBalls == 2){
+                this.xPos = gameArea.clientWidth - this.element.offsetWidth;
+                this.yPos = 0;
+            }
+            else if(noOfCornerBalls == 3){
+                this.xPos = 0;
+                this.yPos = gameArea.clientHeight - this.element.offsetHeight;
+            }
+            else{
+                this.xPos = gameArea.clientWidth - this.element.offsetWidth;
+                this.yPos = gameArea.clientHeight - this.element.offsetHeight;
+            }
+            this.element.style.left = this.xPos + "px";
+            this.element.style.top = this.yPos + "px";
         }
         else{
             this.element.onclick = () => {
@@ -221,7 +255,11 @@ class Ball{
             }
         }
         else if(this.type == "pulse"){
-            addedScore += 50;
+            addedScore += 50 + (income * 5);
+        }
+        else if(this.type == "smallCorner"){
+            addedScore += 5 + income;
+            addedScore *= Math.round(Math.pow(scoreMultiplier, 1.5));
         }
 
 
@@ -252,7 +290,7 @@ class Ball{
     }
 
     checkCollision(otherBall){
-        if(otherBall.type != "blackHole"){
+        if(otherBall.type != "blackHole" && otherBall.type != "corner"){
             let thisRadius = this.element.offsetWidth / 2;
             let otherRadius = otherBall.element.offsetWidth / 2;
 
@@ -272,8 +310,9 @@ class Ball{
                 otherBall.move();
             }
         }
+        else if(otherBall.type == "corner"){}
         else{
-            if(this.type != "persistent" && this.type != "pulse"){
+            if(this.type != "persistent" && this.type != "pulse" && this.type != "corner" && this.type != "smallCorner"){
                 let thisRadius = this.element.offsetWidth / 2;
                 let otherRadius = otherBall.element.offsetWidth / 2;
 
@@ -341,7 +380,7 @@ class Ball{
     }
 
     remove(){
-        if(this.type == "automover"){
+        if(this.type == "automover" || this.type == "smallCorner"){
             clearInterval(this.interval);
         }
 
@@ -510,6 +549,11 @@ addEventListener("keydown", function(ev){
         document.getElementById("rebithCostShow").textContent =
             "Cost: " + showValue(Math.pow(4, rebirths) * 1000000);
     }
+    if(key == "p"){
+        rebirths += 10;
+        score = Infinity;
+        fullRebirth();
+    }
 })
 
 //upgrade Buttons
@@ -621,7 +665,7 @@ function rebirth(){
         eaten = 0;
 
         hasPulseBall = false;
-
+        noOfCornerBalls = 0;
 
         // --------------------
         // RESET UPGRADES
@@ -707,6 +751,8 @@ function rebirth(){
 
         document.getElementById("pulseBallButton").textContent =
             "Cost: " + showValue(100000000);
+        document.getElementById("cornerBallButton").textContent = 
+            "Cost: " + showValue(75000000);
 
 
         // --------------------
@@ -760,6 +806,7 @@ function resetGame(){
     eaten = 0;
 
     hasPulseBall = false;
+    noOfCornerBalls = 0;
 
 
     // --------------------
@@ -846,7 +893,8 @@ function resetGame(){
 
     document.getElementById("pulseBallButton").textContent =
         "Cost: " + showValue(100000000);
-
+    document.getElementById("cornerBallButton").textContent = 
+            "Cost: " + showValue(75000000);
 
     // --------------------
     // REMOVE NORMAL BALLS
@@ -899,6 +947,7 @@ function fullRebirth(){
 
         hasPersistentBall = false;
         hasPulseBall = false;
+        noOfCornerBalls = 0;
 
 
         // --------------------
@@ -988,6 +1037,8 @@ function fullRebirth(){
 
         document.getElementById("pulseBallButton").textContent =
             "Cost: " + showValue(100000000);
+        document.getElementById("cornerBallButton").textContent = 
+            "Cost: " + showValue(75000000);
 
 
         // --------------------
@@ -1049,6 +1100,10 @@ function fullRebirth(){
             document.getElementById("pulse")
                 .classList.add("nowOnDisplay");
         }
+        else if(fullRebirths == 3){
+            document.getElementById("corner")
+                .classList.add("nowOnDisplay");
+        }
 
 
         // --------------------
@@ -1080,6 +1135,7 @@ function fullRebirth(){
 //new Ball methods
 let hasPersistentBall = false;
 let hasPulseBall = false;
+let noOfCornerBalls = 0;
 
 function addPersistentBall(){
     if(score >= 10000000 && !hasPersistentBall){
@@ -1101,9 +1157,25 @@ function addPulseBall(){
     }
 }
 
+function addCornerBall(){
+    if(score >= 75000000 + (noOfCornerBalls * 25000000) && noOfCornerBalls != 4){
+        score -= (75000000 + noOfCornerBalls * 25000000);
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
+        noOfCornerBalls++;
+        new Ball("corner");
+        new Ball("smallCorner");
+        if(noOfCornerBalls == 4){document.getElementById("cornerBallButton").textContent = "MAX"}
+        else{document.getElementById("cornerBallButton").textContent = "Cost: " + showValue(75000000 + (noOfCornerBalls * 25000000));}
+    }
+}
+
 //method for showing the numbers on the HTML
 function showValue(value){
     let x;
+
+    if(value == Infinity){
+        return value;
+    }
 
     if(value >= 1000000000000000000){
         let index = Math.floor(Math.log10(value) / 3);
@@ -1153,4 +1225,505 @@ function getSuffix(value){
     let secondLetter =
         String.fromCharCode(97 + (suffixIndex % 26));
     return firstLetter + secondLetter;
+}
+
+//Method for making rebirthing, prestieging and reseting better
+function confirmAction(message, action){
+
+    let background = document.createElement("div");
+    background.className = "popupBackground";
+
+
+    let box = document.createElement("div");
+    box.className = "popup";
+
+
+    let text = document.createElement("p");
+    text.textContent = message;
+
+
+    let yesButton = document.createElement("button");
+    yesButton.textContent = "Yes";
+
+
+    let noButton = document.createElement("button");
+    noButton.textContent = "No";
+
+
+    yesButton.onclick = () => {
+        action();
+        background.remove();
+    };
+
+
+    noButton.onclick = () => {
+        background.remove();
+    };
+
+
+    box.appendChild(text);
+    box.appendChild(yesButton);
+    box.appendChild(noButton);
+
+    background.appendChild(box);
+    document.body.appendChild(background);
+}
+
+function information(){
+
+    //Stop the page behind the popup from scrolling
+    let oldOverflow = document.documentElement.style.overflowY;
+    document.documentElement.style.overflowY = "hidden";
+
+
+    // --------------------
+    // BACKGROUND
+    // --------------------
+
+    let background = document.createElement("div");
+    background.className = "popupBackground";
+
+
+    // --------------------
+    // POPUP
+    // --------------------
+
+    let box = document.createElement("div");
+    box.className = "popup informationPopup";
+
+
+    // --------------------
+    // COUNT BALLS
+    // --------------------
+
+    function ballCount(type){
+
+        let count = 0;
+
+        for(let ball of balls){
+
+            if(ball.type == type){
+                count++;
+            }
+
+        }
+
+        return count;
+    }
+
+
+    // --------------------
+    // CURRENT VALUES
+    // --------------------
+
+    let luckyChance =
+        Math.round((0.1 + luckyUpgrade) * 100);
+
+
+    let nextLuckyChance;
+
+    if(luckyUpgrade >= 0.4){
+        nextLuckyChance = "MAX";
+    }
+
+    else{
+        nextLuckyChance =
+            Math.round((0.1 + luckyUpgrade + 0.04) * 100) + "%";
+    }
+
+
+    let nextAutomover;
+
+    if(automoverTimer <= 100){
+        nextAutomover = "MAX";
+    }
+
+    else{
+        nextAutomover =
+            (automoverTimer - 100) + " ms";
+    }
+
+
+    // --------------------
+    // INFORMATION
+    // --------------------
+
+    box.innerHTML = `
+
+        <h2>Game Information</h2>
+
+
+        <!-- -------------------- -->
+        <!-- BALLS -->
+        <!-- -------------------- -->
+
+        <h3>Balls</h3>
+
+        <table class="infoTable">
+
+            <tr>
+                <th>Ball Type</th>
+                <th>Base Score</th>
+                <th>Income Effect</th>
+                <th>Multiplier Effect</th>
+                <th>Special</th>
+                <th>Number</th>
+            </tr>
+
+
+            <tr>
+                <td>Standard</td>
+                <td>1</td>
+                <td>Normal</td>
+                <td>Normal</td>
+                <td>None</td>
+                <td>${ballCount("standard")}</td>
+            </tr>
+
+
+            <tr>
+                <td>Big</td>
+                <td>1</td>
+                <td>Normal</td>
+                <td>Normal</td>
+                <td>Larger than a Standard Ball, making collisions more likely</td>
+                <td>${ballCount("big")}</td>
+            </tr>
+
+
+            <tr>
+                <td>Red</td>
+                <td>4</td>
+                <td>Normal</td>
+                <td>Normal</td>
+                <td>Higher base score</td>
+                <td>${ballCount("red")}</td>
+            </tr>
+
+
+            <tr>
+                <td>Automover</td>
+                <td>1</td>
+                <td>Normal</td>
+                <td>Normal</td>
+                <td>
+                    Automatically moves and scores every
+                    ${automoverTimer} ms
+                </td>
+                <td>${ballCount("automover")}</td>
+            </tr>
+
+
+            <tr>
+                <td>Golden</td>
+                <td>10</td>
+                <td>Normal</td>
+                <td>Normal</td>
+                <td>
+                    High base score.
+                    Maximum of 10
+                </td>
+                <td>${noOfGoldenBalls} / 10</td>
+            </tr>
+
+
+            <tr>
+                <td>Tiny</td>
+                <td>3</td>
+                <td>Double</td>
+                <td>Normal</td>
+                <td>
+                    Much smaller than a normal ball
+                </td>
+                <td>${ballCount("tiny")}</td>
+            </tr>
+
+
+            <tr>
+                <td>Lucky</td>
+                <td>Jackpot</td>
+                <td>Normal</td>
+                <td>Normal</td>
+                <td>
+                    ${luckyChance}% chance to activate the jackpot.
+                    Maximum of 5
+                </td>
+                <td>${noOfLuckyBall} / 5</td>
+            </tr>
+
+
+            <tr>
+                <td>Black Hole</td>
+                <td>-</td>
+                <td>Indirect</td>
+                <td>Indirect</td>
+                <td>
+                    Causes a ball that collides with it to score
+                    multiple times. Has a 10% chance to eat the ball.
+                    Each ball eaten increases the number of times
+                    future collisions score.
+                </td>
+                <td>${hasBlackHole ? "1 / 1" : "0 / 1"}</td>
+            </tr>
+
+        </table>
+
+
+        <!-- -------------------- -->
+        <!-- UPGRADES -->
+        <!-- -------------------- -->
+
+        <h3>Upgrades</h3>
+
+        <table class="infoTable">
+
+            <tr>
+                <th>Upgrade</th>
+                <th>Current Level Gives</th>
+                <th>Next Level Gives</th>
+                <th>Effect</th>
+            </tr>
+
+
+            <tr>
+                <td>Clicks</td>
+                <td>+${clickUpgrade}</td>
+                <td>+${clickUpgrade + 1}</td>
+                <td>
+                    Adds additional score when manually
+                    clicking a ball
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Income</td>
+                <td>+${income}</td>
+                <td>+${income + 1}</td>
+                <td>
+                    Adds score whenever a ball scores
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Multiplier</td>
+                <td>x${scoreMultiplier}</td>
+                <td>x${scoreMultiplier + 1}</td>
+                <td>
+                    Multiplies score gained
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Automover Speed</td>
+                <td>${automoverTimer} ms</td>
+                <td>${nextAutomover}</td>
+                <td>
+                    Reduces the time between
+                    Automover activations
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Lucky Chance</td>
+                <td>${luckyChance}%</td>
+                <td>${nextLuckyChance}</td>
+                <td>
+                    Increases the chance of a Lucky Ball
+                    activating the jackpot
+                </td>
+            </tr>
+
+
+            <tr>
+                <td>Jackpot</td>
+                <td>${showValue(jackpot)}</td>
+                <td>${showValue(jackpot * 4)}</td>
+                <td>
+                    Increases the score given when
+                    a Lucky Ball succeeds
+                </td>
+            </tr>
+
+        </table>
+
+
+        <!-- -------------------- -->
+        <!-- REBIRTH -->
+        <!-- -------------------- -->
+
+        <h3>Rebirth</h3>
+
+        <p>
+            Rebirth resets your current score, upgrades and most balls,
+            but permanently increases all score gained.
+        </p>
+
+        <table class="infoTable">
+
+            <tr>
+                <th>Rebirths</th>
+                <th>Score Multiplier</th>
+            </tr>
+
+
+            <tr>
+                <td>1</td>
+                <td>x${showValue(Math.pow(1.5, 1))}</td>
+            </tr>
+
+            <tr>
+                <td>2</td>
+                <td>x${showValue(Math.pow(1.5, 2))}</td>
+            </tr>
+
+            <tr>
+                <td>3</td>
+                <td>x${showValue(Math.pow(1.5, 3))}</td>
+            </tr>
+
+            <tr>
+                <td>4</td>
+                <td>x${showValue(Math.pow(1.5, 4))}</td>
+            </tr>
+
+            <tr>
+                <td>5</td>
+                <td>x${showValue(Math.pow(1.5, 5))}</td>
+            </tr>
+
+
+            <tr>
+                <td>...</td>
+                <td>...</td>
+            </tr>
+
+
+            <tr>
+                <td>10</td>
+                <td>x${showValue(Math.pow(1.5, 10))}</td>
+            </tr>
+
+
+            <tr>
+                <td>15</td>
+                <td>x${showValue(Math.pow(1.5, 15))}</td>
+            </tr>
+
+
+            <tr>
+                <td>20</td>
+                <td>x${showValue(Math.pow(1.5, 20))}</td>
+            </tr>
+
+        </table>
+
+
+        <!-- -------------------- -->
+        <!-- PRESTIGE -->
+        <!-- -------------------- -->
+
+        <h3>Prestige</h3>
+
+        <p>
+            Prestige resets your current run and your Rebirths,
+            but permanently unlocks new Prestige Balls.
+        </p>
+
+        <table class="infoTable">
+
+            <tr>
+                <th>Prestige Ball</th>
+                <th>Base Score</th>
+                <th>Income Effect</th>
+                <th>Multiplier Effect</th>
+                <th>Special</th>
+                <th>Number</th>
+            </tr>
+
+
+            <tr>
+                <td>Persistent</td>
+                <td>1</td>
+                <td>Double</td>
+                <td>Applied Twice</td>
+                <td>
+                    Survives normal Rebirths and Free Resets.
+                    Removed when you Prestige.
+                </td>
+                <td>${ballCount("persistent")} / 1</td>
+            </tr>
+
+
+            <tr>
+                <td>Pulse</td>
+                <td>50</td>
+                <td>Normal</td>
+                <td>Normal</td>
+                <td>
+                    When clicked, moves to a new position,
+                    expands and checks for collisions with
+                    surrounding balls.
+                </td>
+                <td>${ballCount("pulse")} / 1</td>
+            </tr>
+
+
+            <tr>
+                <td>Corner</td>
+                <td>-</td>
+                <td>Indirect</td>
+                <td>Indirect</td>
+                <td>
+                    Remains fixed in one of the four corners.
+                    Each Corner Ball creates a Small Corner Ball.
+                    Maximum of 4.
+                </td>
+                <td>${noOfCornerBalls} / 4</td>
+            </tr>
+
+
+            <tr>
+                <td>Small Corner</td>
+                <td>5</td>
+                <td>Double</td>
+                <td>Applied Twice</td>
+                <td>
+                    Automatically moves and scores every 5 seconds.
+                    One is created for every Corner Ball.
+                </td>
+                <td>${ballCount("smallCorner")}</td>
+            </tr>
+
+        </table>
+
+    `;
+
+
+    // --------------------
+    // CLOSE BUTTON
+    // --------------------
+
+    let closeButton = document.createElement("button");
+    closeButton.textContent = "Close";
+
+
+    closeButton.onclick = () => {
+
+        background.remove();
+
+        document.documentElement.style.overflowY =
+            oldOverflow;
+
+    };
+
+
+    box.appendChild(closeButton);
+
+    background.appendChild(box);
+
+    document.body.appendChild(background);
 }

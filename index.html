@@ -1,156 +1,164 @@
-<!doctype html>
-<html>
-    <head>
-        <link rel = "styleSheet" href = "style.css">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-        <title>Ball Game</title>
-    </head>
+    <!doctype html>
+    <html>
+        <head>
+            <link rel = "styleSheet" href = "style.css">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+            <title>Ball Game</title>
+        </head>
 
-    <body>
-        <!--Create the side for the balls-->
-        <div id = "gameArea">
-            
-        </div>
-        
-        <!--Shop-->
-        <div id = "shop">
-            <h1>Buy Balls</h1>
-            <p id = "showScore">Score: 1</p>
-
-            <!--Allow shop to display correctly-->
-            <h3>Balls</h3>
-            <div class = "shopItem">
-                <p>Buy Standard Ball</p>
-                <button onclick = "addStandardBall()" id = "standardButton">Cost: 1</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Buy Big Ball</p>
-                <button onclick = "addBigBall()" id = "bigButton">Cost: 30</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Buy Red Ball</p>
-                <button onclick = "addRedBall()" id = "redButton">Cost: 40</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Buy Automover</p>
-                <button onclick = "addAutomover()" id = "automoverButton">Cost: 120</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Buy Golden Ball</p>
-                <button onclick = "addGoldenBall()" id = "goldenButton">Cost: 1k</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Buy Tiny Ball</p>
-                <button onclick = "addTinyBall()" id = "tinyButton">Cost: 50</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Buy Lucky Ball</p>
-                <button onclick = "addLuckyBall()" id = "luckyButton">Cost: 10k</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Buy Black Hole</p>
-                <button onclick = "addBlackHole()" id = "blackHoleButton">Cost: 100m</button>
-            </div>
-
-            <hr>
-
-            <h3>Upgrades</h3>
-
-            <div class = "shopItem">
-                <p>Upgrade Clicks</p>
-                <button onclick = "upgradeClick()" id = "upgradeClickButton">Cost: 10</button>
+        <body>
+            <!--Create the side for the balls-->
+            <div id = "gameArea">
+                
             </div>
             
-            <div class = "shopItem">
-                <p>Upgrade Income</p>
-                <button onclick = "upgradeIncome()" id = "upgradeIncomeButton">Cost: 25</button>
+            <!--Shop-->
+            <div id = "shop">
+                <h1>Buy Balls</h1>
+                <div class = "shopItem">
+                    <p id = "showScore">Score: 1</p>
+                    <button onclick = "information()" id = "infoButton">ⓘ</button>
+                </div>
+
+                <!--Allow shop to display correctly-->
+                <h3>Balls</h3>
+                <div class = "shopItem">
+                    <p>Buy Standard Ball</p>
+                    <button onclick = "addStandardBall()" id = "standardButton">Cost: 1</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Buy Big Ball</p>
+                    <button onclick = "addBigBall()" id = "bigButton">Cost: 30</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Buy Red Ball</p>
+                    <button onclick = "addRedBall()" id = "redButton">Cost: 40</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Buy Tiny Ball</p>
+                    <button onclick = "addTinyBall()" id = "tinyButton">Cost: 50</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Buy Automover</p>
+                    <button onclick = "addAutomover()" id = "automoverButton">Cost: 120</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Buy Golden Ball</p>
+                    <button onclick = "addGoldenBall()" id = "goldenButton">Cost: 1k</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Buy Lucky Ball</p>
+                    <button onclick = "addLuckyBall()" id = "luckyButton">Cost: 10k</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Buy Black Hole</p>
+                    <button onclick = "addBlackHole()" id = "blackHoleButton">Cost: 100m</button>
+                </div>
+
+                <hr>
+
+                <h3>Upgrades</h3>
+
+                <div class = "shopItem">
+                    <p>Upgrade Clicks</p>
+                    <button onclick = "upgradeClick()" id = "upgradeClickButton">Cost: 10</button>
+                </div>
+                
+                <div class = "shopItem">
+                    <p>Upgrade Income</p>
+                    <button onclick = "upgradeIncome()" id = "upgradeIncomeButton">Cost: 25</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p id = "showMultiplier">Upgrade Multiplier x1</p>
+                    <button onclick = "upgradeMultiplier()" id = "upgradeMultiplierButton">Cost: 200</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Upgrade Automovers</p>
+                    <button onclick = "upgradeAutomover()" id = "upgradeAutomoverButton">Cost: 100</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Upgrade Lucky Balls</p>
+                    <button onclick = "upgradeLuckyBalls()" id = "upgradeLuckyBallsButton">Cost: 20k</button>
+                </div>
+
+                <div class = "shopItem">
+                    <p>Upgrade Jackpot</p>
+                    <button onclick = "increaseJackpot()" id = "upgradeJackpotButton">Cost: 10k</button>
+                </div>
+
+                <hr>
+
+                <h3>Rebirths</h3>
+
+                <div class = "shopItem">
+                    <p id = "rebirthShow">Rebirths: 0</p>
+                    <button onclick = "confirmAction('Rebirth will reset your score, upgrades and most balls. Continue?', rebirth)">Rebirth</button>
+                </div>
+                <p id = "rebithCostShow">Cost: 1m</p>
+
+                <div class = "shopItem">
+                    <p>Made an error? Free Reset</p>
+                    <button onclick = "confirmAction('This will reset your current run without giving a Rebirth. Continue?', resetGame)">Click only if stuck</button>
+                </div>
+                <p>No rebirth gained</p>
+
+                <hr>
+
+                <h3>Prestige</h3>
+
+                <div class = "shopItem">
+                    <p>Prestige</p>
+                    <button onclick = "confirmAction('Prestige will reset your score, upgrades, balls and Rebirths. Continue?', fullRebirth)" id = "fullRebirthButton">Cost: 500b and 10 Rebirths</button>
+                </div>
+                <p id = "nextFullRebirth">Next Prestige Grants: Persistent Ball</p>
+
+                <hr id = "fullRebirthDivider">
+
+                <h3 id = "fullRebirthShop">Prestige Balls</h3>
+
+                <div class = "shopItem" id = "persistent">
+                    <p>Buy Persistent Ball</p>
+                    <button onclick = "addPersistentBall()" id = "persistentBallButton">Cost: 10m</button>
+                </div>
+
+                <div class = "shopItem" id = "pulse">
+                    <p>Buy Pulse Ball</p>
+                    <button onclick = "addPulseBall()" id = "pulseBallButton">Cost: 100m</button>
+                </div>
+
+                <div class = "shopItem" id = "corner">
+                    <p>Buy Corner Ball</p>
+                    <button onclick = "addCornerBall()" id = "cornerBallButton">Cost: 75m</button>
+                </div>
+
+                <hr>
+                <h3>Gamestate</h3>
+                <div class = "shopItem">
+                    <button onclick = "manualSave()">Save Game</button>
+                    <button onclick = "fullResetGame()">Reset Game</button>
+                </div>
+                <div class = "shopItem">
+                    <p>Load From Code:</p>
+                    <input id = "codeInput">
+                </div>
+                <div class = "shopItem">
+                    <button onclick = "getCode()">Get Code</button>
+                    <button onclick="loadCode()">Load Code</button>
+                </div>
             </div>
 
-            <div class = "shopItem">
-                <p id = "showMultiplier">Upgrade Multiplier x1</p>
-                <button onclick = "upgradeMultiplier()" id = "upgradeMultiplierButton">Cost: 200</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Upgrade Automovers</p>
-                <button onclick = "upgradeAutomover()" id = "upgradeAutomoverButton">Cost: 100</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Upgrade Lucky Balls</p>
-                <button onclick = "upgradeLuckyBalls()" id = "upgradeLuckyBallsButton">Cost: 20k</button>
-            </div>
-
-            <div class = "shopItem">
-                <p>Upgrade Jackpot</p>
-                <button onclick = "increaseJackpot()" id = "upgradeJackpotButton">Cost: 10k</button>
-            </div>
-
-            <hr>
-
-            <h3>Rebirths</h3>
-
-            <div class = "shopItem">
-                <p id = "rebirthShow">Rebirths: 0</p>
-                <button onclick = "rebirth()">Rebirth</button>
-            </div>
-            <p id = "rebithCostShow">Cost: 1m</p>
-
-            <div class = "shopItem">
-                <p>Made an error? Free Reset</p>
-                <button onclick = "resetGame()">Click only if stuck</button>
-            </div>
-            <p>No rebirth gained</p>
-
-            <hr>
-
-            <h3>Prestige</h3>
-
-            <div class = "shopItem">
-                <p>Prestige</p>
-                <button onclick = "fullRebirth()" id = "fullRebirthButton">Cost: 500b and 10 Rebirths</button>
-            </div>
-            <p id = "nextFullRebirth">Next Prestige Grants: Persistent Ball</p>
-
-            <hr id = "fullRebirthDivider">
-
-            <h3 id = "fullRebirthShop">Prestige Balls</h3>
-
-            <div class = "shopItem" id = "persistent">
-                <p>Buy Persistent Ball</p>
-                <button onclick = "addPersistentBall()" id = "persistentBallButton">Cost: 10m</button>
-            </div>
-
-            <div class = "shopItem" id = "pulse">
-                <p>Buy Pulse Ball</p>
-                <button onclick = "addPulseBall()" id = "pulseBallButton">Cost: 100m</button>
-            </div>
-
-            <hr>
-            <h3>Gamestate</h3>
-            <div class = "shopItem">
-                <button onclick = "manualSave()">Save Game</button>
-                <button onclick = "fullResetGame()">Reset Game</button>
-            </div>
-            <div class = "shopItem">
-                <p>Load From Code:</p>
-                <input id = "codeInput"></input>
-            </div>
-            <div class = "shopItem">
-                <button onclick = "getCode()">Get Code</button>
-                <button onclick="loadCode()">Load Code</button>
-            </div>
-        </div>
-
-        <!--Add all the JavaScript files-->
-        <script src = "script.js"></script>
-        <script src = "save.js"></script>
-    </body>
-</html>
+            <!--Add all the JavaScript files-->
+            <script src = "script.js"></script>
+            <script src = "save.js"></script>
+        </body>
+    </html>

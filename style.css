@@ -215,6 +215,10 @@ hr{
     display: none;
 }
 
+#corner{
+    display: none;
+}
+
 /*Make anything hidden available to be shown*/
 .nowOnDisplay{
     display: block !important;
@@ -243,9 +247,124 @@ hr{
     transform-origin: center;
 }
 
+.cornerBall{
+    position: absolute;
+    width: 12vmin;
+    height: 12vmin;
+    border-radius: 50%;
+    background-color: skyblue;
+}
+
+.smallCornerBall{
+    position: absolute;
+    width: 2vmin;
+    height: 2vmin;
+    border-radius: 50%;
+    background-color: skyblue;
+}
+
 /*Making the buttons on the popup look correct*/
 #resetBackground button{
     background-color: lightslategrey;
     border-radius: 11px;
     margin: 5vmin;
+}
+
+/*Make info button look unique*/
+#infoButton{
+    background-color: #1a1a1a;
+    color: lightgrey;
+    border: 1px solid lightgrey;
+    border-radius: 50%;
+
+    width: 34px;
+    height: 34px;
+
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/*Make popups look better*/
+.popup{
+    background-color: #1a1a1a;
+    color: lightgrey;
+
+    padding: 25px;
+    border-radius: 12px;
+
+    width: 50%;
+    max-height: 75vh;
+
+    overflow-y: auto;
+}
+
+.popupBackground{
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background-color: rgba(0, 0, 0, 0.6);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 1000;
+}
+
+.popup button{
+    background-color: lightslategrey;
+    border-radius: 11px;
+    margin: 10px;
+}
+
+/*Make info popup look better*/
+.informationPopup{
+    width: 75vw;
+    max-width: 1100px;
+
+    max-height: 80vh;
+    overflow-y: auto;
+
+    text-align: left;
+
+    scrollbar-width: none;
+}
+
+.informationPopup::-webkit-scrollbar{
+    display: none;
+}
+
+.informationPopup h2{
+    text-align: center;
+}
+
+.informationPopup h3{
+    margin-top: 30px;
+}
+
+.infoTable{
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+
+.infoTable th,
+.infoTable td{
+    border: 1px solid grey;
+    padding: 8px;
+    text-align: left;
+}
+
+.infoTable th{
+    background-color: #252525;
+}
+
+.informationPopup > button{
+    display: block;
+    margin: 20px auto 0 auto;
 }
