@@ -219,6 +219,10 @@ hr{
     display: none;
 }
 
+#orbiter{
+    display: none;
+}
+
 /*Make anything hidden available to be shown*/
 .nowOnDisplay{
     display: block !important;
@@ -261,6 +265,14 @@ hr{
     height: 2vmin;
     border-radius: 50%;
     background-color: skyblue;
+}
+
+.orbiterBall{
+    position: absolute;
+    width: 4vmin;
+    height: 4vmin;
+    border-radius: 50%;
+    background-color: #E67E22;
 }
 
 /*Making the buttons on the popup look correct*/

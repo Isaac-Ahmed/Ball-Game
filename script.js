@@ -88,6 +88,9 @@ class Ball{
         if(this.type == "smallCorner"){
             this.element.className = "smallCornerBall";
         }
+        if(this.type == "orbiter"){
+            this.element.className = "orbiterBall";
+        }
         //Put element in the gameArea
         document.getElementById("gameArea").appendChild(this.element);
         balls.push(this);
@@ -177,6 +180,41 @@ class Ball{
             this.element.style.left = this.xPos + "px";
             this.element.style.top = this.yPos + "px";
         }
+        else if(this.type == "orbiter"){
+
+            this.angle = -Math.PI / 2;
+
+            this.orbitRadius =
+                Math.min(gameArea.clientWidth, gameArea.clientHeight) * 0.25;
+
+            this.interval = setInterval(() => {
+
+                let centreX =
+                    (gameArea.clientWidth - this.element.offsetWidth) / 2;
+
+                let centreY =
+                    (gameArea.clientHeight - this.element.offsetHeight) / 2;
+
+                this.xPos =
+                    centreX + Math.cos(this.angle) * this.orbitRadius;
+
+                this.yPos =
+                    centreY + Math.sin(this.angle) * this.orbitRadius;
+
+                this.element.style.left = this.xPos + "px";
+                this.element.style.top = this.yPos + "px";
+
+                this.angle += 0.03;
+
+                for(let x of balls){
+                    if(x != this){
+                        if(this.checkCollision(x)){
+                            this.addScore();
+                        }
+                    }
+                }
+            }, 16);
+        }
         else{
             this.element.onclick = () => {
                 score += (clickUpgrade * scoreMultiplier);
@@ -261,7 +299,9 @@ class Ball{
             addedScore += 5 + income;
             addedScore *= Math.round(Math.pow(scoreMultiplier, 1.5));
         }
-
+        else if(this.type == "orbiter"){
+            addedScore += 50 + (income * 3);
+        }
 
         // --------------------
         // GENERAL SCORE MULTIPLIERS
@@ -308,7 +348,10 @@ class Ball{
             if(distance <= thisRadius + otherRadius){
                 otherBall.addScore();
                 otherBall.move();
+
+                return true;
             }
+            return false;
         }
         else if(otherBall.type == "corner"){}
         else{
@@ -380,7 +423,7 @@ class Ball{
     }
 
     remove(){
-        if(this.type == "automover" || this.type == "smallCorner"){
+        if(this.type == "automover" || this.type == "smallCorner" || this.type == "orbiter"){
             clearInterval(this.interval);
         }
 
@@ -666,6 +709,7 @@ function rebirth(){
 
         hasPulseBall = false;
         noOfCornerBalls = 0;
+        hasOrbiterBall = false;
 
         // --------------------
         // RESET UPGRADES
@@ -753,6 +797,8 @@ function rebirth(){
             "Cost: " + showValue(100000000);
         document.getElementById("cornerBallButton").textContent = 
             "Cost: " + showValue(75000000);
+        document.getElementById("orbiterBallButton").textContent = 
+            "Cost: 120m";
 
 
         // --------------------
@@ -807,6 +853,7 @@ function resetGame(){
 
     hasPulseBall = false;
     noOfCornerBalls = 0;
+    hasOrbiterBall = false;
 
 
     // --------------------
@@ -895,6 +942,8 @@ function resetGame(){
         "Cost: " + showValue(100000000);
     document.getElementById("cornerBallButton").textContent = 
             "Cost: " + showValue(75000000);
+    document.getElementById("orbiterBallButton").textContent = 
+            "Cost: 120m";
 
     // --------------------
     // REMOVE NORMAL BALLS
@@ -948,6 +997,7 @@ function fullRebirth(){
         hasPersistentBall = false;
         hasPulseBall = false;
         noOfCornerBalls = 0;
+        hasOrbiterBall = false;
 
 
         // --------------------
@@ -1039,7 +1089,8 @@ function fullRebirth(){
             "Cost: " + showValue(100000000);
         document.getElementById("cornerBallButton").textContent = 
             "Cost: " + showValue(75000000);
-
+        document.getElementById("orbiterBallButton").textContent = 
+            "Cost: 120m";
 
         // --------------------
         // REMOVE ALL BALLS
@@ -1104,7 +1155,10 @@ function fullRebirth(){
             document.getElementById("corner")
                 .classList.add("nowOnDisplay");
         }
-
+        else if(fullRebirths == 4){
+            document.getElementById("orbiter")
+                .classList.add("nowOnDisplay");
+        }
 
         // --------------------
         // SHOW NEXT BALL UNLOCK
@@ -1136,6 +1190,7 @@ function fullRebirth(){
 let hasPersistentBall = false;
 let hasPulseBall = false;
 let noOfCornerBalls = 0;
+let hasOrbiterBall = false;
 
 function addPersistentBall(){
     if(score >= 10000000 && !hasPersistentBall){
@@ -1166,6 +1221,16 @@ function addCornerBall(){
         new Ball("smallCorner");
         if(noOfCornerBalls == 4){document.getElementById("cornerBallButton").textContent = "MAX"}
         else{document.getElementById("cornerBallButton").textContent = "Cost: " + showValue(75000000 + (noOfCornerBalls * 25000000));}
+    }
+}
+
+function addOrbiterBall(){
+    if(score >= 120000000 && !hasOrbiterBall){
+        score -=120000000;
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
+        new Ball("orbiter");
+        hasOrbiterBall = true;
+        document.getElementById("orbiterBallButton").textContent = "MAX";
     }
 }
 
@@ -1661,7 +1726,7 @@ function information(){
             <tr>
                 <td>Pulse</td>
                 <td>50</td>
-                <td>Normal</td>
+                <td>Sextupled</td>
                 <td>Normal</td>
                 <td>
                     When clicked, moves to a new position,
@@ -1698,6 +1763,18 @@ function information(){
                 <td>${ballCount("smallCorner")}</td>
             </tr>
 
+            <tr>
+                <td>Orbiter</td>
+                <td>50</td>
+                <td>Quadrupled</td>
+                <td>Normal</td>
+                <td>
+                    Orbits around the centre of the game area.
+                    When it collides with another ball, both balls score
+                    and the other ball moves. Cannot be clicked.
+                </td>
+                <td>${ballCount("orbiter")}</td>
+            </tr>
         </table>
 
     `;

@@ -1,19 +1,34 @@
 function saveGame(){
 
+    // --------------------
+    // SAVE NUMBERS SAFELY
+    // --------------------
+
+    function saveNumber(value){
+
+        if(value == Infinity){
+            return "Infinity";
+        }
+
+        return value;
+    }
+
+
     let saveData = {
+
 
         // --------------------
         // SAVE VERSION
         // --------------------
 
-        saveVersion: 1,
+        saveVersion: 2,
 
 
         // --------------------
         // MAIN PROGRESS
         // --------------------
 
-        score: score,
+        score: saveNumber(score),
 
         rebirths: rebirths,
         fullRebirths: fullRebirths,
@@ -24,35 +39,50 @@ function saveGame(){
         // --------------------
 
         income: income,
-        incomeCost: incomeCost,
+        incomeCost: saveNumber(incomeCost),
 
         automoverTimer: automoverTimer,
-        automoverUpgradeCost: automoverUpgradeCost,
+        automoverUpgradeCost:
+            saveNumber(automoverUpgradeCost),
 
         scoreMultiplier: scoreMultiplier,
-        scoreMultiplierCost: scoreMultiplierCost,
+        scoreMultiplierCost:
+            saveNumber(scoreMultiplierCost),
 
         luckyUpgrade: luckyUpgrade,
-        luckyCost: luckyCost,
+        luckyCost: saveNumber(luckyCost),
 
         clickUpgrade: clickUpgrade,
-        clickCost: clickCost,
+        clickCost: saveNumber(clickCost),
 
-        jackpot: jackpot,
-        jackpotCost: jackpotCost,
+        jackpot: saveNumber(jackpot),
+        jackpotCost: saveNumber(jackpotCost),
 
 
         // --------------------
         // NORMAL BALL SHOP COSTS
         // --------------------
 
-        standardBallScore: standardBallScore,
-        bigBallScore: bigBallScore,
-        redBallScore: redBallScore,
-        automoverScore: automoverScore,
-        goldenBallScore: goldenBallScore,
-        tinyBallScore: tinyBallScore,
-        luckyBallScore: luckyBallScore,
+        standardBallScore:
+            saveNumber(standardBallScore),
+
+        bigBallScore:
+            saveNumber(bigBallScore),
+
+        redBallScore:
+            saveNumber(redBallScore),
+
+        automoverScore:
+            saveNumber(automoverScore),
+
+        goldenBallScore:
+            saveNumber(goldenBallScore),
+
+        tinyBallScore:
+            saveNumber(tinyBallScore),
+
+        luckyBallScore:
+            saveNumber(luckyBallScore),
 
 
         // --------------------
@@ -79,7 +109,8 @@ function saveGame(){
 
 function loadGame(){
 
-    let savedGame = localStorage.getItem("ballGameSave");
+    let savedGame =
+        localStorage.getItem("ballGameSave");
 
 
     // --------------------
@@ -91,42 +122,126 @@ function loadGame(){
     }
 
 
-    let saveData = JSON.parse(savedGame);
+    let saveData;
+
+    try{
+        saveData = JSON.parse(savedGame);
+    }
+
+    catch{
+        return;
+    }
+
+
+    // --------------------
+    // LOAD NUMBER
+    //
+    // Supports:
+    // - old normal number saves
+    // - new "Infinity" saves
+    // - old Infinity saves which
+    //   JSON.stringify changed to null
+    // --------------------
+
+    function loadNumber(value, defaultValue){
+
+        if(value === "Infinity"){
+            return Infinity;
+        }
+
+        /*
+            Older versions saved Infinity as null
+            because JSON.stringify(Infinity) becomes null.
+        */
+
+        if(value === null){
+            return Infinity;
+        }
+
+        if(value === undefined){
+            return defaultValue;
+        }
+
+        return value;
+    }
 
 
     // --------------------
     // LOAD MAIN PROGRESS
     // --------------------
 
-    score = saveData.score ?? 1;
+    score =
+        loadNumber(saveData.score, 1);
 
-    rebirths = saveData.rebirths ?? 0;
-    fullRebirths = saveData.fullRebirths ?? 0;
+    rebirths =
+        saveData.rebirths ?? 0;
+
+    fullRebirths =
+        saveData.fullRebirths ?? 0;
 
 
     // --------------------
     // LOAD UPGRADES
     // --------------------
 
-    income = saveData.income ?? 0;
-    incomeCost = saveData.incomeCost ?? 25;
+    income =
+        saveData.income ?? 0;
 
-    automoverTimer = saveData.automoverTimer ?? 1000;
+    incomeCost =
+        loadNumber(saveData.incomeCost, 25);
+
+
+    automoverTimer =
+        saveData.automoverTimer ?? 1000;
+
     automoverUpgradeCost =
-        saveData.automoverUpgradeCost ?? 100;
+        loadNumber(
+            saveData.automoverUpgradeCost,
+            100
+        );
 
-    scoreMultiplier = saveData.scoreMultiplier ?? 1;
+
+    scoreMultiplier =
+        saveData.scoreMultiplier ?? 1;
+
     scoreMultiplierCost =
-        saveData.scoreMultiplierCost ?? 200;
+        loadNumber(
+            saveData.scoreMultiplierCost,
+            200
+        );
 
-    luckyUpgrade = saveData.luckyUpgrade ?? 0;
-    luckyCost = saveData.luckyCost ?? 20000;
 
-    clickUpgrade = saveData.clickUpgrade ?? 0;
-    clickCost = saveData.clickCost ?? 10;
+    luckyUpgrade =
+        saveData.luckyUpgrade ?? 0;
 
-    jackpot = saveData.jackpot ?? 100;
-    jackpotCost = saveData.jackpotCost ?? 10000;
+    luckyCost =
+        loadNumber(
+            saveData.luckyCost,
+            20000
+        );
+
+
+    clickUpgrade =
+        saveData.clickUpgrade ?? 0;
+
+    clickCost =
+        loadNumber(
+            saveData.clickCost,
+            10
+        );
+
+
+    jackpot =
+        loadNumber(
+            saveData.jackpot,
+            100
+        );
+
+    jackpotCost =
+        loadNumber(
+            saveData.jackpotCost,
+            10000
+        );
 
 
     // --------------------
@@ -134,32 +249,54 @@ function loadGame(){
     // --------------------
 
     standardBallScore =
-        saveData.standardBallScore ?? 1;
+        loadNumber(
+            saveData.standardBallScore,
+            1
+        );
 
     bigBallScore =
-        saveData.bigBallScore ?? 30;
+        loadNumber(
+            saveData.bigBallScore,
+            30
+        );
 
     redBallScore =
-        saveData.redBallScore ?? 40;
+        loadNumber(
+            saveData.redBallScore,
+            40
+        );
 
     automoverScore =
-        saveData.automoverScore ?? 120;
+        loadNumber(
+            saveData.automoverScore,
+            120
+        );
 
     goldenBallScore =
-        saveData.goldenBallScore ?? 1000;
+        loadNumber(
+            saveData.goldenBallScore,
+            1000
+        );
 
     tinyBallScore =
-        saveData.tinyBallScore ?? 50;
+        loadNumber(
+            saveData.tinyBallScore,
+            50
+        );
 
     luckyBallScore =
-        saveData.luckyBallScore ?? 10000;
+        loadNumber(
+            saveData.luckyBallScore,
+            10000
+        );
 
 
     // --------------------
-    // LOAD BLACK HOLE PROGRESS
+    // LOAD BLACK HOLE
     // --------------------
 
-    eaten = saveData.eaten ?? 0;
+    eaten =
+        saveData.eaten ?? 0;
 
 
     // --------------------
@@ -167,7 +304,8 @@ function loadGame(){
     // --------------------
 
     fullRebirthCost =
-        500000000000 * Math.pow(5, fullRebirths);
+        500000000000 *
+        Math.pow(5, fullRebirths);
 
 
     // --------------------
@@ -181,7 +319,6 @@ function loadGame(){
 
     // --------------------
     // RESET BALL COUNTERS
-    // BEFORE LOADING
     // --------------------
 
     noOfGoldenBalls = 0;
@@ -189,35 +326,63 @@ function loadGame(){
     noOfCornerBalls = 0;
 
     hasBlackHole = false;
+
     hasPersistentBall = false;
     hasPulseBall = false;
+    hasOrbiterBall = false;
 
 
     // --------------------
     // RECREATE SAVED BALLS
     // --------------------
 
-    let savedBalls = saveData.balls ?? [];
+    let savedBalls =
+        saveData.balls ?? [];
+
 
     for(let type of savedBalls){
 
         /*
-        Corner needs its counter increased BEFORE
-        creating it because the constructor uses
-        noOfCornerBalls to decide which corner
-        it should be placed in.
+            Corner must be counted BEFORE
+            being created because its constructor
+            uses noOfCornerBalls to determine
+            which corner it belongs in.
         */
 
         if(type == "corner"){
             noOfCornerBalls++;
         }
 
-        new Ball(type);
+
+        /*
+            Only create known ball types.
+
+            This also means a corrupt save cannot
+            create some completely unknown ball.
+        */
+
+        if(
+            type == "standard" ||
+            type == "big" ||
+            type == "red" ||
+            type == "automover" ||
+            type == "golden" ||
+            type == "tiny" ||
+            type == "lucky" ||
+            type == "blackHole" ||
+            type == "persistent" ||
+            type == "pulse" ||
+            type == "corner" ||
+            type == "smallCorner" ||
+            type == "orbiter"
+        ){
+            new Ball(type);
+        }
     }
 
 
     // --------------------
-    // RECALCULATE OTHER BALL COUNTERS
+    // RECALCULATE BALL COUNTERS
     // --------------------
 
     for(let ball of balls){
@@ -241,6 +406,10 @@ function loadGame(){
         if(ball.type == "pulse"){
             hasPulseBall = true;
         }
+
+        if(ball.type == "orbiter"){
+            hasOrbiterBall = true;
+        }
     }
 
 
@@ -248,104 +417,179 @@ function loadGame(){
     // UPDATE MAIN DISPLAY
     // --------------------
 
-    document.getElementById("showScore").textContent =
+    document.getElementById(
+        "showScore"
+    ).textContent =
         "Score: " + showValue(score);
 
-    document.getElementById("rebirthShow").textContent =
+
+    document.getElementById(
+        "rebirthShow"
+    ).textContent =
         "Rebirths: " + rebirths;
 
-    document.getElementById("rebithCostShow").textContent =
-        "Cost: " + showValue(
-            Math.pow(4, rebirths) * 1000000
+
+    document.getElementById(
+        "rebithCostShow"
+    ).textContent =
+        "Cost: " +
+        showValue(
+            Math.pow(4, rebirths) *
+            1000000
         );
 
-    document.getElementById("fullRebirthButton").textContent =
+
+    document.getElementById(
+        "fullRebirthButton"
+    ).textContent =
         "Cost: " +
         showValue(fullRebirthCost) +
         " and 10 Rebirths";
 
 
     // --------------------
-    // UPDATE NORMAL BALL SHOP
+    // NORMAL BALL SHOP
     // --------------------
 
-    document.getElementById("standardButton").textContent =
-        "Cost: " + showValue(standardBallScore);
+    document.getElementById(
+        "standardButton"
+    ).textContent =
+        "Cost: " +
+        showValue(standardBallScore);
 
-    document.getElementById("bigButton").textContent =
-        "Cost: " + showValue(bigBallScore);
 
-    document.getElementById("redButton").textContent =
-        "Cost: " + showValue(redBallScore);
+    document.getElementById(
+        "bigButton"
+    ).textContent =
+        "Cost: " +
+        showValue(bigBallScore);
 
-    document.getElementById("automoverButton").textContent =
-        "Cost: " + showValue(automoverScore);
 
-    document.getElementById("tinyButton").textContent =
-        "Cost: " + showValue(tinyBallScore);
+    document.getElementById(
+        "redButton"
+    ).textContent =
+        "Cost: " +
+        showValue(redBallScore);
 
+
+    document.getElementById(
+        "automoverButton"
+    ).textContent =
+        "Cost: " +
+        showValue(automoverScore);
+
+
+    document.getElementById(
+        "tinyButton"
+    ).textContent =
+        "Cost: " +
+        showValue(tinyBallScore);
+
+
+    // --------------------
+    // GOLDEN BALL
+    // --------------------
 
     if(noOfGoldenBalls >= 10){
 
-        document.getElementById("goldenButton").textContent =
-            "MAX";
+        document.getElementById(
+            "goldenButton"
+        ).textContent = "MAX";
 
     }
 
     else{
 
-        document.getElementById("goldenButton").textContent =
-            "Cost: " + showValue(goldenBallScore);
+        document.getElementById(
+            "goldenButton"
+        ).textContent =
+            "Cost: " +
+            showValue(goldenBallScore);
 
     }
 
+
+    // --------------------
+    // LUCKY BALL
+    // --------------------
 
     if(noOfLuckyBall >= 5){
 
-        document.getElementById("luckyButton").textContent =
-            "MAX";
+        document.getElementById(
+            "luckyButton"
+        ).textContent = "MAX";
 
     }
 
     else{
 
-        document.getElementById("luckyButton").textContent =
-            "Cost: " + showValue(luckyBallScore);
+        document.getElementById(
+            "luckyButton"
+        ).textContent =
+            "Cost: " +
+            showValue(luckyBallScore);
 
     }
 
+
+    // --------------------
+    // BLACK HOLE
+    // --------------------
 
     if(hasBlackHole){
 
-        document.getElementById("blackHoleButton").textContent =
-            "MAX";
+        document.getElementById(
+            "blackHoleButton"
+        ).textContent = "MAX";
 
     }
 
     else{
 
-        document.getElementById("blackHoleButton").textContent =
-            "Cost: " + showValue(100000000);
+        document.getElementById(
+            "blackHoleButton"
+        ).textContent =
+            "Cost: " +
+            showValue(100000000);
 
     }
 
 
     // --------------------
-    // UPDATE UPGRADE SHOP
+    // UPGRADE SHOP
     // --------------------
 
-    document.getElementById("upgradeClickButton").textContent =
-        "Cost: " + showValue(clickCost);
+    document.getElementById(
+        "upgradeClickButton"
+    ).textContent =
+        "Cost: " +
+        showValue(clickCost);
 
-    document.getElementById("upgradeIncomeButton").textContent =
-        "Cost: " + showValue(incomeCost);
 
-    document.getElementById("upgradeMultiplierButton").textContent =
-        "Cost: " + showValue(scoreMultiplierCost);
+    document.getElementById(
+        "upgradeIncomeButton"
+    ).textContent =
+        "Cost: " +
+        showValue(incomeCost);
 
-    document.getElementById("showMultiplier").textContent =
-        "Upgrade Multiplier x" + scoreMultiplier;
 
+    document.getElementById(
+        "upgradeMultiplierButton"
+    ).textContent =
+        "Cost: " +
+        showValue(scoreMultiplierCost);
+
+
+    document.getElementById(
+        "showMultiplier"
+    ).textContent =
+        "Upgrade Multiplier x" +
+        showValue(scoreMultiplier);
+
+
+    // --------------------
+    // AUTOMOVER UPGRADE
+    // --------------------
 
     if(automoverTimer <= 100){
 
@@ -362,10 +606,17 @@ function loadGame(){
         document.getElementById(
             "upgradeAutomoverButton"
         ).textContent =
-            "Cost: " + showValue(automoverUpgradeCost);
+            "Cost: " +
+            showValue(
+                automoverUpgradeCost
+            );
 
     }
 
+
+    // --------------------
+    // LUCKY CHANCE UPGRADE
+    // --------------------
 
     if(luckyUpgrade >= 0.4){
 
@@ -382,7 +633,8 @@ function loadGame(){
         document.getElementById(
             "upgradeLuckyBallsButton"
         ).textContent =
-            "Cost: " + showValue(luckyCost);
+            "Cost: " +
+            showValue(luckyCost);
 
     }
 
@@ -390,7 +642,8 @@ function loadGame(){
     document.getElementById(
         "upgradeJackpotButton"
     ).textContent =
-        "Cost: " + showValue(jackpotCost);
+        "Cost: " +
+        showValue(jackpotCost);
 
 
     // --------------------
@@ -401,16 +654,21 @@ function loadGame(){
 
         document.getElementById(
             "fullRebirthDivider"
-        ).classList.add("nowOnDisplay");
+        ).classList.add(
+            "nowOnDisplay"
+        );
 
         document.getElementById(
             "fullRebirthShop"
-        ).classList.add("nowOnDisplay");
+        ).classList.add(
+            "nowOnDisplay"
+        );
 
         document.getElementById(
             "persistent"
-        ).classList.add("nowOnDisplay");
-
+        ).classList.add(
+            "nowOnDisplay"
+        );
     }
 
 
@@ -418,8 +676,9 @@ function loadGame(){
 
         document.getElementById(
             "pulse"
-        ).classList.add("nowOnDisplay");
-
+        ).classList.add(
+            "nowOnDisplay"
+        );
     }
 
 
@@ -427,13 +686,24 @@ function loadGame(){
 
         document.getElementById(
             "corner"
-        ).classList.add("nowOnDisplay");
+        ).classList.add(
+            "nowOnDisplay"
+        );
+    }
 
+
+    if(fullRebirths >= 4){
+
+        document.getElementById(
+            "orbiter"
+        ).classList.add(
+            "nowOnDisplay"
+        );
     }
 
 
     // --------------------
-    // UPDATE PRESTIGE BALL BUTTONS
+    // PRESTIGE BALL BUTTONS
     // --------------------
 
     if(hasPersistentBall){
@@ -449,7 +719,8 @@ function loadGame(){
         document.getElementById(
             "persistentBallButton"
         ).textContent =
-            "Cost: " + showValue(10000000);
+            "Cost: " +
+            showValue(10000000);
 
     }
 
@@ -467,13 +738,14 @@ function loadGame(){
         document.getElementById(
             "pulseBallButton"
         ).textContent =
-            "Cost: " + showValue(100000000);
+            "Cost: " +
+            showValue(100000000);
 
     }
 
 
     // --------------------
-    // UPDATE CORNER BALL BUTTON
+    // CORNER BALL
     // --------------------
 
     if(noOfCornerBalls >= 4){
@@ -492,14 +764,38 @@ function loadGame(){
             "Cost: " +
             showValue(
                 75000000 +
-                (noOfCornerBalls * 25000000)
+                (noOfCornerBalls *
+                25000000)
             );
 
     }
 
 
     // --------------------
-    // SHOW NEXT PRESTIGE BALL
+    // ORBITER BALL
+    // --------------------
+
+    if(hasOrbiterBall){
+
+        document.getElementById(
+            "orbiterBallButton"
+        ).textContent = "MAX";
+
+    }
+
+    else{
+
+        document.getElementById(
+            "orbiterBallButton"
+        ).textContent =
+            "Cost: " +
+            showValue(120000000);
+
+    }
+
+
+    // --------------------
+    // NEXT PRESTIGE BALL
     // --------------------
 
     if(fullRebirths < newBalls.length){
@@ -508,7 +804,9 @@ function loadGame(){
             newBalls[fullRebirths];
 
         let capitalisedBallName =
-            newBallName.charAt(0).toUpperCase() +
+            newBallName
+                .charAt(0)
+                .toUpperCase() +
             newBallName.slice(1);
 
         document.getElementById(
