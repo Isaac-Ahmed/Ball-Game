@@ -21,7 +21,7 @@ function saveGame(){
         // SAVE VERSION
         // --------------------
 
-        saveVersion: 2,
+        saveVersion: 5,
 
 
         // --------------------
@@ -57,6 +57,7 @@ function saveGame(){
 
         jackpot: saveNumber(jackpot),
         jackpotCost: saveNumber(jackpotCost),
+        jackpotUpgrades: jackpotUpgrades,
 
 
         // --------------------
@@ -96,7 +97,17 @@ function saveGame(){
         // BALLS CURRENTLY ON BOARD
         // --------------------
 
-        balls: balls.map(ball => ball.type)
+        balls: balls.map(ball => ball.type),
+
+
+        // --------------------
+        // CHAIN BALL
+        //
+        // Chain is not stored in balls[],
+        // so it must be saved separately.
+        // --------------------
+
+        chainBall: chain != null
 
     };
 
@@ -134,13 +145,7 @@ function loadGame(){
 
 
     // --------------------
-    // LOAD NUMBER
-    //
-    // Supports:
-    // - old normal number saves
-    // - new "Infinity" saves
-    // - old Infinity saves which
-    //   JSON.stringify changed to null
+    // LOAD NUMBERS SAFELY
     // --------------------
 
     function loadNumber(value, defaultValue){
@@ -150,8 +155,8 @@ function loadGame(){
         }
 
         /*
-            Older versions saved Infinity as null
-            because JSON.stringify(Infinity) becomes null.
+            Old saves could turn Infinity
+            into null through JSON.stringify().
         */
 
         if(value === null){
@@ -188,7 +193,10 @@ function loadGame(){
         saveData.income ?? 0;
 
     incomeCost =
-        loadNumber(saveData.incomeCost, 25);
+        loadNumber(
+            saveData.incomeCost,
+            25
+        );
 
 
     automoverTimer =
@@ -242,6 +250,16 @@ function loadGame(){
             saveData.jackpotCost,
             10000
         );
+
+    /*
+        Version 5 saves the number of
+        Jackpot upgrades directly.
+
+        Older saves did not have this value.
+    */
+
+    jackpotUpgrades =
+        saveData.jackpotUpgrades ?? 0;
 
 
     // --------------------
@@ -309,6 +327,15 @@ function loadGame(){
 
 
     // --------------------
+    // CLEAR CURRENT CHAIN
+    // --------------------
+
+    if(chain != null){
+        chain.remove();
+    }
+
+
+    // --------------------
     // CLEAR CURRENT BALLS
     // --------------------
 
@@ -330,23 +357,43 @@ function loadGame(){
     hasPersistentBall = false;
     hasPulseBall = false;
     hasOrbiterBall = false;
+    hasChainBall = false;
 
 
     // --------------------
-    // RECREATE SAVED BALLS
+    // SAVED BALLS
     // --------------------
 
     let savedBalls =
         saveData.balls ?? [];
 
 
+    /*
+        Version 4+ saves Chain separately.
+
+        This also supports a save where Chain
+        happened to be inside balls[].
+
+        hasChainBall is included as another
+        fallback in case an older experimental
+        save ever stored that value directly.
+    */
+
+    let savedChain =
+        saveData.chainBall ??
+        saveData.hasChainBall ??
+        savedBalls.includes("chain");
+
+
+    // --------------------
+    // RECREATE SAVED BALLS
+    // --------------------
+
     for(let type of savedBalls){
 
         /*
-            Corner must be counted BEFORE
-            being created because its constructor
-            uses noOfCornerBalls to determine
-            which corner it belongs in.
+            Corner needs its counter increased
+            BEFORE the constructor is called.
         */
 
         if(type == "corner"){
@@ -355,10 +402,8 @@ function loadGame(){
 
 
         /*
-            Only create known ball types.
-
-            This also means a corrupt save cannot
-            create some completely unknown ball.
+            Chain is handled separately because
+            it does not live inside balls[].
         */
 
         if(
@@ -382,7 +427,17 @@ function loadGame(){
 
 
     // --------------------
-    // RECALCULATE BALL COUNTERS
+    // RECREATE CHAIN
+    // --------------------
+
+    if(savedChain){
+        new Ball("chain");
+        hasChainBall = true;
+    }
+
+
+    // --------------------
+    // RECALCULATE COUNTERS
     // --------------------
 
     for(let ball of balls){
@@ -615,7 +670,7 @@ function loadGame(){
 
 
     // --------------------
-    // LUCKY CHANCE UPGRADE
+    // LUCKY UPGRADE
     // --------------------
 
     if(luckyUpgrade >= 0.4){
@@ -639,11 +694,29 @@ function loadGame(){
     }
 
 
-    document.getElementById(
-        "upgradeJackpotButton"
-    ).textContent =
-        "Cost: " +
-        showValue(jackpotCost);
+    // --------------------
+    // JACKPOT UPGRADE
+    // --------------------
+
+    if(jackpotUpgrades >= 10){
+
+        jackpotUpgrades = 10;
+
+        document.getElementById(
+            "upgradeJackpotButton"
+        ).textContent = "MAX";
+
+    }
+
+    else{
+
+        document.getElementById(
+            "upgradeJackpotButton"
+        ).textContent =
+            "Cost: " +
+            showValue(jackpotCost);
+
+    }
 
 
     // --------------------
@@ -702,8 +775,18 @@ function loadGame(){
     }
 
 
+    if(fullRebirths >= 5){
+
+        document.getElementById(
+            "chain"
+        ).classList.add(
+            "nowOnDisplay"
+        );
+    }
+
+
     // --------------------
-    // PRESTIGE BALL BUTTONS
+    // PERSISTENT BALL
     // --------------------
 
     if(hasPersistentBall){
@@ -724,6 +807,10 @@ function loadGame(){
 
     }
 
+
+    // --------------------
+    // PULSE BALL
+    // --------------------
 
     if(hasPulseBall){
 
@@ -764,8 +851,10 @@ function loadGame(){
             "Cost: " +
             showValue(
                 75000000 +
-                (noOfCornerBalls *
-                25000000)
+                (
+                    noOfCornerBalls *
+                    25000000
+                )
             );
 
     }
@@ -790,6 +879,29 @@ function loadGame(){
         ).textContent =
             "Cost: " +
             showValue(120000000);
+
+    }
+
+
+    // --------------------
+    // CHAIN BALL
+    // --------------------
+
+    if(hasChainBall){
+
+        document.getElementById(
+            "chainBallButton"
+        ).textContent = "MAX";
+
+    }
+
+    else{
+
+        document.getElementById(
+            "chainBallButton"
+        ).textContent =
+            "Cost: " +
+            showValue(150000000);
 
     }
 

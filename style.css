@@ -223,6 +223,10 @@ hr{
     display: none;
 }
 
+#chain{
+    display: none;
+}
+
 /*Make anything hidden available to be shown*/
 .nowOnDisplay{
     display: block !important;
@@ -269,10 +273,18 @@ hr{
 
 .orbiterBall{
     position: absolute;
+    width: 6vmin;
+    height: 6vmin;
+    border-radius: 50%;
+    background-color: #E67E22;
+}
+
+.chainBall{
+    position: absolute;
     width: 4vmin;
     height: 4vmin;
     border-radius: 50%;
-    background-color: #E67E22;
+    background-color: darkmagenta;
 }
 
 /*Making the buttons on the popup look correct*/

@@ -23,8 +23,12 @@ let clickCost = 10;
 
 let jackpotCost = 10000;
 let jackpot = 100;
+let jackpotUpgrades = 0;
 
 let eaten = 0;
+
+//Chain variable to remove it
+let chain;
 
 //variables for ball class
 let balls = [];
@@ -91,9 +95,15 @@ class Ball{
         if(this.type == "orbiter"){
             this.element.className = "orbiterBall";
         }
+        if(this.type == "chain"){
+            this.element.className = "chainBall";
+            chain = this;
+        }
         //Put element in the gameArea
         document.getElementById("gameArea").appendChild(this.element);
-        balls.push(this);
+        if(this.type != "chain"){
+            balls.push(this);
+        }
         //Make it call addScore if not automover
         if(this.type == "automover"){
             this.interval = setInterval(() => {
@@ -127,7 +137,7 @@ class Ball{
                     this.justMoved = true;
 
                     //Give click score
-                    score += (clickUpgrade * scoreMultiplier);
+                    score += (clickUpgrade * scoreMultiplier * Math.pow(1.5, rebirths));
                     this.clicked = true;
                     this.addScore();
 
@@ -135,7 +145,7 @@ class Ball{
                     this.move();
 
                     //Grow
-                    this.element.style.transform = "scale(2.5)";
+                    this.element.style.transform = "scale(4)";
 
                     //Check collisions while it is large
                     setTimeout(() => {
@@ -215,9 +225,16 @@ class Ball{
                 }
             }, 16);
         }
+        else if(this.type == "chain"){
+            this.element.onclick = () => {
+                this.moves = 0;
+                this.startChain();
+            }
+            this.move()
+        }
         else{
             this.element.onclick = () => {
-                score += (clickUpgrade * scoreMultiplier);
+                score += (clickUpgrade * scoreMultiplier * Math.pow(1.5, rebirths));
                 this.clicked = true;
                 this.addScore();
                 this.move();
@@ -258,7 +275,7 @@ class Ball{
         // --------------------
 
         if(this.clicked){
-            showScoreAdded += clickUpgrade * scoreMultiplier;
+            showScoreAdded += clickUpgrade * scoreMultiplier * Math.pow(1.5, rebirths);
         }
 
 
@@ -277,6 +294,9 @@ class Ball{
         }
         else if(this.type == "golden"){
             addedScore += 10;
+            if(this.clicked){
+                addedScore += (20 + clickUpgrade);
+            }
         }
         else if(this.type == "lucky"){
             let luckyChance = 0.1 + luckyUpgrade;
@@ -289,7 +309,7 @@ class Ball{
             addedScore += (1 + income) * scoreMultiplier;
 
             if(this.clicked){
-                addedScore += clickUpgrade;
+                addedScore += (clickUpgrade * scoreMultiplier);
             }
         }
         else if(this.type == "pulse"){
@@ -302,6 +322,10 @@ class Ball{
         else if(this.type == "orbiter"){
             addedScore += 50 + (income * 3);
         }
+        else if(this.type == "chain"){
+            addedScore += 250 + ((income + clickUpgrade) * 3);
+            addedScore *= scoreMultiplier;
+        }
 
         // --------------------
         // GENERAL SCORE MULTIPLIERS
@@ -309,7 +333,9 @@ class Ball{
         // --------------------
 
         addedScore += income;
-        addedScore *= scoreMultiplier;
+        if(this.type != "lucky"){
+            addedScore *= scoreMultiplier;
+        }
         addedScore *= Math.pow(1.5, rebirths);
 
 
@@ -330,75 +356,240 @@ class Ball{
     }
 
     checkCollision(otherBall){
-        if(otherBall.type != "blackHole" && otherBall.type != "corner"){
-            let thisRadius = this.element.offsetWidth / 2;
-            let otherRadius = otherBall.element.offsetWidth / 2;
 
-            let thisCentreX = this.xPos + thisRadius;
-            let thisCentreY = this.yPos + thisRadius;
+    // --------------------
+    // NORMAL COLLISIONS
+    // --------------------
 
-            let otherCentreX = otherBall.xPos + otherRadius;
-            let otherCentreY = otherBall.yPos + otherRadius;
+    if(
+        otherBall.type != "blackHole" &&
+        otherBall.type != "corner"
+    ){
 
-            let dx = thisCentreX - otherCentreX;
-            let dy = thisCentreY - otherCentreY;
+        let thisRadius = this.element.offsetWidth / 2;
+        let otherRadius = otherBall.element.offsetWidth / 2;
 
-            let distance = Math.sqrt((dx * dx) + (dy * dy));
+        let thisCentreX = this.xPos + thisRadius;
+        let thisCentreY = this.yPos + thisRadius;
 
-            if(distance <= thisRadius + otherRadius){
+        let otherCentreX = otherBall.xPos + otherRadius;
+        let otherCentreY = otherBall.yPos + otherRadius;
+
+        let dx = thisCentreX - otherCentreX;
+        let dy = thisCentreY - otherCentreY;
+
+        let distance =
+            Math.sqrt((dx * dx) + (dy * dy));
+
+
+        if(distance <= thisRadius + otherRadius){
+
+
+            // --------------------
+            // PULSE BALL
+            // --------------------
+
+            if(otherBall.type == "pulse"){
+
+                //Only activate if Pulse is not already active
+                if(!otherBall.justMoved){
+
+                    otherBall.justMoved = true;
+
+
+                    //Treat collision as activating the Pulse
+                    score += (
+                        clickUpgrade *
+                        scoreMultiplier *
+                        Math.pow(1.5, rebirths)
+                    );
+
+                    otherBall.clicked = true;
+                    otherBall.addScore();
+
+
+                    //Move Pulse
+                    otherBall.move();
+
+
+                    //Grow
+                    otherBall.element.style.transform =
+                        "scale(4)";
+
+
+                    //Check collisions while enlarged
+                    setTimeout(() => {
+
+                        for(let x of balls){
+
+                            //Do not check collision with itself
+                            if(x != otherBall){
+
+                                otherBall.checkCollision(x);
+
+                            }
+
+                        }
+
+
+                        //Shrink
+                        otherBall.element.style.transform =
+                            "scale(1)";
+
+                    }, 500);
+
+
+                    //Allow Pulse to activate again
+                    setTimeout(() => {
+
+                        otherBall.justMoved = false;
+
+                    }, 1000);
+
+                }
+
+            }
+
+
+            // --------------------
+            // OTHER BALLS
+            // --------------------
+
+            else{
+
                 otherBall.addScore();
                 otherBall.move();
 
-                return true;
             }
-            return false;
+
+
+            return true;
         }
-        else if(otherBall.type == "corner"){}
-        else{
-            if(this.type != "persistent" && this.type != "pulse" && this.type != "corner" && this.type != "smallCorner"){
-                let thisRadius = this.element.offsetWidth / 2;
-                let otherRadius = otherBall.element.offsetWidth / 2;
 
-                let thisCentreX = this.xPos + thisRadius;
-                let thisCentreY = this.yPos + thisRadius;
 
-                let otherCentreX = otherBall.xPos + otherRadius;
-                let otherCentreY = otherBall.yPos + otherRadius;
-
-                let dx = thisCentreX - otherCentreX;
-                let dy = thisCentreY - otherCentreY;
-
-                let distance = Math.sqrt((dx * dx) + (dy * dy));
-
-                if(distance <= thisRadius + otherRadius){
-
-                    for(let i = 0; i < (eaten + 10); i++){
-                        this.addScore();
-                    }
-
-                    let x = Math.random();
-
-                    if(x <= 0.1){
-
-                        if(this.type == "lucky"){
-                            noOfLuckyBall--;
-                            document.getElementById("luckyButton").textContent =
-                                "Cost: " + showValue(luckyBallScore);
-                        }
-
-                        if(this.type == "golden"){
-                            noOfGoldenBalls--;
-                            document.getElementById("goldenButton").textContent =
-                                "Cost: " + showValue(goldenBallScore);
-                        }
-
-                        eaten++;
-                        this.remove();
-                    }
-                }
-            }
-        }
+        return false;
     }
+
+
+    // --------------------
+    // CORNER BALL
+    // --------------------
+
+    else if(otherBall.type == "corner"){
+
+        return false;
+
+    }
+
+
+    // --------------------
+    // BLACK HOLE
+    // --------------------
+
+    else{
+
+        /*
+            These balls cannot be affected
+            by the Black Hole.
+        */
+
+        if(
+            this.type == "persistent" ||
+            this.type == "pulse" ||
+            this.type == "corner" ||
+            this.type == "smallCorner" ||
+            this.type == "orbiter" ||
+            this.type == "chain"
+        ){
+
+            return false;
+
+        }
+
+
+        // --------------------
+        // BLACK HOLE COLLISION
+        // --------------------
+
+        let thisRadius = this.element.offsetWidth / 2;
+        let otherRadius = otherBall.element.offsetWidth / 2;
+
+        let thisCentreX = this.xPos + thisRadius;
+        let thisCentreY = this.yPos + thisRadius;
+
+        let otherCentreX = otherBall.xPos + otherRadius;
+        let otherCentreY = otherBall.yPos + otherRadius;
+
+        let dx = thisCentreX - otherCentreX;
+        let dy = thisCentreY - otherCentreY;
+
+        let distance =
+            Math.sqrt((dx * dx) + (dy * dy));
+
+
+        if(distance <= thisRadius + otherRadius){
+
+
+            //Score multiple times based on Black Hole strength
+            for(let i = 0; i < (eaten + 10); i++){
+
+                this.addScore();
+
+            }
+
+
+            //10% chance for Black Hole to eat the ball
+            let x = Math.random();
+
+
+            if(x <= 0.1){
+
+
+                //Lucky Ball counter
+                if(this.type == "lucky"){
+
+                    noOfLuckyBall--;
+
+                    document.getElementById(
+                        "luckyButton"
+                    ).textContent =
+                        "Cost: " +
+                        showValue(luckyBallScore);
+
+                }
+
+
+                //Golden Ball counter
+                if(this.type == "golden"){
+
+                    noOfGoldenBalls--;
+
+                    document.getElementById(
+                        "goldenButton"
+                    ).textContent =
+                        "Cost: " +
+                        showValue(goldenBallScore);
+
+                }
+
+
+                //Increase Black Hole strength
+                eaten++;
+
+
+                //Remove eaten ball
+                this.remove();
+
+            }
+
+
+            return true;
+        }
+
+
+        return false;
+    }
+}
 
     getXPos(){
         return this.xPos;
@@ -423,8 +614,11 @@ class Ball{
     }
 
     remove(){
-        if(this.type == "automover" || this.type == "smallCorner" || this.type == "orbiter"){
+        if(this.type == "automover" || this.type == "smallCorner" || this.type == "orbiter" || this.type == "chain"){
             clearInterval(this.interval);
+        }
+        if(this.type == "chain"){
+            chain = null;
         }
 
         this.element.remove();
@@ -463,7 +657,25 @@ class Ball{
         setTimeout(() => {
             gainText.remove();
         }, 1000);
+    }
+    
+    startChain(){
+        this.move();
+        this.addScore();
+        this.moves = 0;
+        this.element.onclick = () => {};
+        this.interval = setInterval(() => {
+            this.move();
+            this.addScore();
+            this.moves++;
+            if(this.moves == 9){
+                clearInterval(this.interval);
+                this.element.onclick = () => {
+                    this.startChain();
+                };
             }
+        }, 1000)
+    }
 }
 
 //values for the shop
@@ -646,7 +858,7 @@ function upgradeMultiplier(){
     if(score >= scoreMultiplierCost){
         scoreMultiplier++;
         score -= scoreMultiplierCost;
-        scoreMultiplierCost = scoreMultiplierCost * 2;
+        scoreMultiplierCost = scoreMultiplierCost * 3;
     }
     document.getElementById("showScore").textContent = "Score: " + showValue(score);
     document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + showValue(scoreMultiplierCost);
@@ -672,12 +884,14 @@ function upgradeLuckyBalls(){
 }
 
 function increaseJackpot(){
-    if(score >= jackpotCost){
-        jackpot *= 4;
+    if(score >= jackpotCost && jackpotUpgrades != 10){
+        jackpot *= 3;
         score -= jackpotCost;
-        jackpotCost *= 5;
+        jackpotCost  = Math.floor(jackpotCost * 6.5);
+        jackpotUpgrades++;
         document.getElementById("upgradeJackpotButton").textContent = "Cost: " + showValue(jackpotCost);
         document.getElementById("showScore").textContent = "Score: " + showValue(score);
+        if(jackpotUpgrades == 10){document.getElementById("upgradeJackpotButton").textContent = "MAX";}
     }
 }
 
@@ -710,6 +924,7 @@ function rebirth(){
         hasPulseBall = false;
         noOfCornerBalls = 0;
         hasOrbiterBall = false;
+        hasChainBall = false;
 
         // --------------------
         // RESET UPGRADES
@@ -732,6 +947,7 @@ function rebirth(){
 
         jackpotCost = 10000;
         jackpot = 100;
+        jackpotUpgrades = 0;
 
 
         // --------------------
@@ -799,12 +1015,16 @@ function rebirth(){
             "Cost: " + showValue(75000000);
         document.getElementById("orbiterBallButton").textContent = 
             "Cost: 120m";
+        document.getElementById("chainBallButton").textContent = 
+            "Cost: 150m";
 
 
         // --------------------
         // REMOVE NORMAL BALLS
         // KEEP PERSISTENT BALL
         // --------------------
+
+        if(chain != null){chain.remove();}
 
         for(let i = balls.length - 1; i >= 0; i--){
             if(balls[i].type != "persistent"){
@@ -854,7 +1074,7 @@ function resetGame(){
     hasPulseBall = false;
     noOfCornerBalls = 0;
     hasOrbiterBall = false;
-
+    hasChainBall = false;
 
     // --------------------
     // RESET UPGRADES
@@ -877,6 +1097,7 @@ function resetGame(){
 
     jackpotCost = 10000;
     jackpot = 100;
+    jackpotUpgrades = 0;
 
 
     // --------------------
@@ -944,11 +1165,16 @@ function resetGame(){
             "Cost: " + showValue(75000000);
     document.getElementById("orbiterBallButton").textContent = 
             "Cost: 120m";
+    document.getElementById("chainBallButton").textContent = 
+            "Cost: 150m";
 
     // --------------------
     // REMOVE NORMAL BALLS
     // KEEP PERSISTENT BALL
     // --------------------
+
+    if(chain != null){chain.remove();}
+
 
     for(let i = balls.length - 1; i >= 0; i--){
         if(balls[i].type != "persistent"){
@@ -998,7 +1224,7 @@ function fullRebirth(){
         hasPulseBall = false;
         noOfCornerBalls = 0;
         hasOrbiterBall = false;
-
+        hasChainBall = false;
 
         // --------------------
         // RESET UPGRADES
@@ -1021,6 +1247,7 @@ function fullRebirth(){
 
         jackpotCost = 10000;
         jackpot = 100;
+        jackpotUpgrades = 0;
 
 
         // --------------------
@@ -1091,10 +1318,14 @@ function fullRebirth(){
             "Cost: " + showValue(75000000);
         document.getElementById("orbiterBallButton").textContent = 
             "Cost: 120m";
+        document.getElementById("chainBallButton").textContent =
+            "Cost: 150m";
 
         // --------------------
         // REMOVE ALL BALLS
         // --------------------
+
+        if(chain != null){chain.remove();}
 
         while(balls.length > 0){
             balls[0].remove();
@@ -1159,6 +1390,10 @@ function fullRebirth(){
             document.getElementById("orbiter")
                 .classList.add("nowOnDisplay");
         }
+        else if(fullRebirths == 5){
+            document.getElementById("chain")
+                .classList.add("nowOnDisplay");
+        }
 
         // --------------------
         // SHOW NEXT BALL UNLOCK
@@ -1191,6 +1426,7 @@ let hasPersistentBall = false;
 let hasPulseBall = false;
 let noOfCornerBalls = 0;
 let hasOrbiterBall = false;
+let hasChainBall = false;
 
 function addPersistentBall(){
     if(score >= 10000000 && !hasPersistentBall){
@@ -1231,6 +1467,16 @@ function addOrbiterBall(){
         new Ball("orbiter");
         hasOrbiterBall = true;
         document.getElementById("orbiterBallButton").textContent = "MAX";
+    }
+}
+
+function addChainBall(){
+    if(score >= 150000000 && !hasChainBall){
+        score -= 150000000;
+        document.getElementById("showScore").textContent = "Score: " + showValue(score);
+        new Ball("chain");
+        hasChainBall = true;
+        document.getElementById("chainBallButton").textContent = "MAX";
     }
 }
 
@@ -1381,6 +1627,15 @@ function information(){
     // CURRENT VALUES
     // --------------------
 
+    /*
+        Lucky Ball begins at a 10% chance.
+
+        Each upgrade adds 4%.
+
+        Maximum:
+        10% + (10 x 4%) = 50%
+    */
+
     let luckyChance =
         Math.round((0.1 + luckyUpgrade) * 100);
 
@@ -1392,8 +1647,15 @@ function information(){
     }
 
     else{
+
         nextLuckyChance =
-            Math.round((0.1 + luckyUpgrade + 0.04) * 100) + "%";
+            Math.min(
+                50,
+                Math.round(
+                    (0.1 + luckyUpgrade + 0.04) * 100
+                )
+            ) + "%";
+
     }
 
 
@@ -1404,8 +1666,21 @@ function information(){
     }
 
     else{
+
         nextAutomover =
             (automoverTimer - 100) + " ms";
+
+    }
+
+
+    let nextJackpot;
+
+    if(jackpotUpgrades >= 10){
+        nextJackpot = "MAX";
+    }
+
+    else{
+        nextJackpot = showValue(jackpot * 3);
     }
 
 
@@ -1451,7 +1726,9 @@ function information(){
                 <td>1</td>
                 <td>Normal</td>
                 <td>Normal</td>
-                <td>Larger than a Standard Ball, making collisions more likely</td>
+                <td>
+                    Larger than a Standard Ball, making collisions more likely
+                </td>
                 <td>${ballCount("big")}</td>
             </tr>
 
@@ -1485,7 +1762,8 @@ function information(){
                 <td>Normal</td>
                 <td>Normal</td>
                 <td>
-                    High base score.
+                    When manually clicked, gains an additional
+                    20 + Click Upgrade score.
                     Maximum of 10
                 </td>
                 <td>${noOfGoldenBalls} / 10</td>
@@ -1506,11 +1784,13 @@ function information(){
 
             <tr>
                 <td>Lucky</td>
-                <td>Jackpot</td>
+                <td>0</td>
                 <td>Normal</td>
-                <td>Normal</td>
+                <td>Not Applied</td>
                 <td>
-                    ${luckyChance}% chance to activate the jackpot.
+                    ${luckyChance}% chance to activate the
+                    ${showValue(jackpot)} Jackpot.
+                    Jackpot still benefits from Rebirths.
                     Maximum of 5
                 </td>
                 <td>${noOfLuckyBall} / 5</td>
@@ -1527,11 +1807,12 @@ function information(){
                     multiple times. Has a 10% chance to eat the ball.
                     Each ball eaten increases the number of times
                     future collisions score.
+                    Current Strength: x${eaten + 10}  
                 </td>
                 <td>${hasBlackHole ? "1 / 1" : "0 / 1"}</td>
             </tr>
 
-        </table>
+            </table>
 
 
         <!-- -------------------- -->
@@ -1598,7 +1879,8 @@ function information(){
                 <td>${nextLuckyChance}</td>
                 <td>
                     Increases the chance of a Lucky Ball
-                    activating the jackpot
+                    activating the Jackpot.
+                    Maximum chance is 50%
                 </td>
             </tr>
 
@@ -1606,10 +1888,12 @@ function information(){
             <tr>
                 <td>Jackpot</td>
                 <td>${showValue(jackpot)}</td>
-                <td>${showValue(jackpot * 4)}</td>
+                <td>${nextJackpot}</td>
                 <td>
-                    Increases the score given when
-                    a Lucky Ball succeeds
+                    Triples the Jackpot value.
+                    Maximum of 10 upgrades.
+                    The Upgrade Multiplier does not affect
+                    the Jackpot, but Rebirths do
                 </td>
             </tr>
 
@@ -1624,7 +1908,7 @@ function information(){
 
         <p>
             Rebirth resets your current score, upgrades and most balls,
-            but permanently increases all score gained.
+            but permanently increases score gained by x1.5 per Rebirth.
         </p>
 
         <table class="infoTable">
@@ -1763,6 +2047,7 @@ function information(){
                 <td>${ballCount("smallCorner")}</td>
             </tr>
 
+
             <tr>
                 <td>Orbiter</td>
                 <td>50</td>
@@ -1773,8 +2058,22 @@ function information(){
                     When it collides with another ball, both balls score
                     and the other ball moves. Cannot be clicked.
                 </td>
-                <td>${ballCount("orbiter")}</td>
+                <td>${ballCount("orbiter")} / 1</td>
             </tr>
+
+
+            <tr>
+                <td>Chain</td>
+                <td>250</td>
+                <td>Quadrupled</td>
+                <td>Applied Twice</td>
+                <td>
+                    When activated, moves and scores ten times.
+                    Cannot be activated by collisions with other balls.
+                </td>
+                <td>${hasChainBall ? "1 / 1" : "0 / 1"}</td>
+            </tr>
+
         </table>
 
     `;
