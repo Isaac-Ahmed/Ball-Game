@@ -498,8 +498,7 @@ function loadGame(){
         "fullRebirthButton"
     ).textContent =
         "Cost: " +
-        showValue(fullRebirthCost) +
-        " and 10 Rebirths";
+        showValue(fullRebirthCost);
 
 
     // --------------------
@@ -938,10 +937,25 @@ function loadGame(){
             "All Prestige Balls Unlocked";
 
     }
+
+    //--------------------
+    // GIVE CORRECT STYLE
+    //--------------------
+    if(fullRebirths != 0){
+        let hue = (fullRebirths * 137.5) % 360;
+        document.getElementById("gameArea").style.backgroundColor = "hsl(" + hue + ", 30%, 20%)";
+    }
+    checkScores();
+
+    if(fullRebirths == newBalls.length){
+        document.getElementById("fullRebirthButton").textContent = "MAX";
+    }
+
 }
 
 loadGame();
 setInterval(saveGame, 5000);
+checkScores();
 
 function manualSave(){
     saveGame();

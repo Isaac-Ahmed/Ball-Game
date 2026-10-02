@@ -392,3 +392,14 @@ hr{
     display: block;
     margin: 20px auto 0 auto;
 }
+
+/*Allow buttons to change colour depending on if we can afford the upgrade*/
+.shopItem button.canAfford{
+    background-color: #2E7D5B;
+    color: white;
+}
+
+.shopItem button.cannotAfford{
+    background-color: #8B3A3A;
+    color: white;
+}

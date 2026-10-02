@@ -353,6 +353,7 @@ class Ball{
 
         document.getElementById("showScore").textContent =
             "Score: " + showValue(score);
+        checkScores();
     }
 
     checkCollision(otherBall){
@@ -703,6 +704,7 @@ function addStandardBall(){
     }
     document.getElementById("standardButton").textContent = "Cost: " + showValue(standardBallScore);
     document.getElementById("showScore").textContent = "Score: " + showValue(score);
+    checkScores();
 }
 
 function addBigBall(){
@@ -713,6 +715,7 @@ function addBigBall(){
     }
     document.getElementById("bigButton").textContent = "Cost: " + showValue(bigBallScore);
     document.getElementById("showScore").textContent = "Score: " + showValue(score);
+    checkScores();
 }
 
 function addRedBall(){
@@ -722,6 +725,7 @@ function addRedBall(){
         redBallScore = redBallScore * 3;
         document.getElementById("redButton").textContent = "Cost: " + showValue(redBallScore);
         document.getElementById("showScore").textContent = "Score: " + showValue(score);
+        checkScores();
     }
 }
 
@@ -732,6 +736,7 @@ function addAutomover(){
         automoverScore = automoverScore * 2;
         document.getElementById("automoverButton").textContent = "Cost: " + showValue(automoverScore);
         document.getElementById("showScore").textContent = "Score: " + showValue(score);
+        checkScores();
     }
 }
 
@@ -745,6 +750,7 @@ function addGoldenBall(){
         else{document.getElementById("goldenButton").textContent = "Cost: " + showValue(goldenBallScore);}
         document.getElementById("showScore").textContent = "Score: " + showValue(score);
     }
+    checkScores();
 }
 
 function addTinyBall(){
@@ -755,6 +761,7 @@ function addTinyBall(){
     }
     document.getElementById("tinyButton").textContent = "Cost: " + showValue(tinyBallScore);
     document.getElementById("showScore").textContent = "Score: " + showValue(score);
+    checkScores();
 }
 
 function addLuckyBall(){
@@ -771,6 +778,7 @@ function addLuckyBall(){
         document.getElementById("luckyButton").textContent = "Cost: " + showValue(luckyBallScore);
     }
     document.getElementById("showScore").textContent = "Score: " + showValue(score);
+    checkScores();
 }
 
 function addBlackHole(){
@@ -780,6 +788,7 @@ function addBlackHole(){
         new Ball("blackHole");
         document.getElementById("showScore").textContent = "Score: " + showValue(score);
         hasBlackHole = true;
+        checkScores();
     }
 }
 
@@ -809,6 +818,7 @@ addEventListener("keydown", function(ev){
         score = Infinity;
         fullRebirth();
     }
+    checkScores();
 })
 
 //upgrade Buttons
@@ -822,6 +832,7 @@ function upgradeClick(){
         else{clickCost = Math.floor(clickCost * 1.5);}
         document.getElementById("upgradeClickButton").textContent = "Cost: " + showValue(clickCost);
         document.getElementById("showScore").textContent = "Score: " + showValue(score);
+        checkScores();
     }
 }
 
@@ -833,6 +844,7 @@ function upgradeIncome(){
     }
     document.getElementById("upgradeIncomeButton").textContent = "Cost: " + showValue(incomeCost);
     document.getElementById("showScore").textContent = "Score: " + showValue(score);
+    checkScores();
 }
 
 function upgradeAutomover(){
@@ -852,6 +864,7 @@ function upgradeAutomover(){
     else{
         document.getElementById("upgradeAutomoverButton").textContent = "Cost: " + showValue(automoverUpgradeCost);
     }
+    checkScores();
 }
 
 function upgradeMultiplier(){
@@ -863,6 +876,7 @@ function upgradeMultiplier(){
     document.getElementById("showScore").textContent = "Score: " + showValue(score);
     document.getElementById("upgradeMultiplierButton").textContent = "Cost: " + showValue(scoreMultiplierCost);
     document.getElementById("showMultiplier").textContent = "Upgrade Multiplier x" + showValue(scoreMultiplier);
+    checkScores();
 }
 
 function upgradeLuckyBalls(){
@@ -881,6 +895,7 @@ function upgradeLuckyBalls(){
     else{
         document.getElementById("upgradeLuckyBallsButton").textContent = "Cost: " + showValue(luckyCost);
     }
+    checkScores();
 }
 
 function increaseJackpot(){
@@ -893,6 +908,7 @@ function increaseJackpot(){
         document.getElementById("showScore").textContent = "Score: " + showValue(score);
         if(jackpotUpgrades == 10){document.getElementById("upgradeJackpotButton").textContent = "MAX";}
     }
+    checkScores();
 }
 
 //Rebirth
@@ -1046,6 +1062,8 @@ function rebirth(){
             "Cost: " + showValue(
                 Math.pow(4, rebirths) * 1000000
             );
+
+        checkScores();
     }
 }
 
@@ -1194,11 +1212,13 @@ function resetGame(){
         "Cost: " + showValue(
             Math.pow(4, rebirths) * 1000000
         );
+
+    checkScores();
 }
 
 function fullRebirth(){
 
-    if(rebirths >= 10 && score >= fullRebirthCost){
+    if(score >= fullRebirthCost && fullRebirths < newBalls.length){
 
         // --------------------
         // RESET BALL SHOP
@@ -1357,8 +1377,7 @@ function fullRebirth(){
 
         document.getElementById("fullRebirthButton").textContent =
             "Cost: " +
-            showValue(fullRebirthCost) +
-            " and 10 Rebirths";
+            showValue(fullRebirthCost);
 
 
         // --------------------
@@ -1418,6 +1437,19 @@ function fullRebirth(){
             document.getElementById("nextFullRebirth").textContent =
                 "All Prestige Balls Unlocked";
         }
+
+        //--------------------
+        // CHANGE COLOUR
+        //--------------------
+
+        let hue = (fullRebirths * 137.5) % 360;
+        document.getElementById("gameArea").style.backgroundColor = "hsl(" + hue + ", 30%, 20%)";
+
+        checkScores();
+
+        if(fullRebirths == newBalls.length){
+            document.getElementById("fullRebirthButton").textContent = "MAX";
+        }
     }
 }
 
@@ -1436,6 +1468,7 @@ function addPersistentBall(){
         document.getElementById("persistentBallButton").textContent = "MAX";
         hasPersistentBall = true;
     }
+    checkScores();
 }
 
 function addPulseBall(){
@@ -1446,6 +1479,7 @@ function addPulseBall(){
         document.getElementById("pulseBallButton").textContent = "MAX";
         hasPulseBall = true;
     }
+    checkScores();
 }
 
 function addCornerBall(){
@@ -1458,6 +1492,7 @@ function addCornerBall(){
         if(noOfCornerBalls == 4){document.getElementById("cornerBallButton").textContent = "MAX"}
         else{document.getElementById("cornerBallButton").textContent = "Cost: " + showValue(75000000 + (noOfCornerBalls * 25000000));}
     }
+    checkScores();
 }
 
 function addOrbiterBall(){
@@ -1468,6 +1503,7 @@ function addOrbiterBall(){
         hasOrbiterBall = true;
         document.getElementById("orbiterBallButton").textContent = "MAX";
     }
+    checkScores();
 }
 
 function addChainBall(){
@@ -1478,6 +1514,7 @@ function addChainBall(){
         hasChainBall = true;
         document.getElementById("chainBallButton").textContent = "MAX";
     }
+    checkScores();
 }
 
 //method for showing the numbers on the HTML
@@ -1540,6 +1577,22 @@ function getSuffix(value){
 
 //Method for making rebirthing, prestieging and reseting better
 function confirmAction(message, action){
+
+    if(action == rebirth){
+        if(score < Math.pow(4, rebirths) * 1000000){
+            return;
+        }
+    }
+
+    if(action == fullRebirth){
+        if(
+            score < fullRebirthCost ||
+            fullRebirths >= newBalls.length
+        ){
+            return;
+        }
+    }
+
 
     let background = document.createElement("div");
     background.className = "popupBackground";
@@ -2102,4 +2155,62 @@ function information(){
     background.appendChild(box);
 
     document.body.appendChild(background);
+}
+
+//Method and array for allowing the buttons to change colour if you cannot afford then
+let shopChecks = [
+
+    //Normal Balls
+    {button: "standardButton", cost: () => standardBallScore},
+    {button: "bigButton", cost: () => bigBallScore},
+    {button: "redButton", cost: () => redBallScore},
+    {button: "automoverButton", cost: () => automoverScore},
+    {button: "goldenButton", cost: () => goldenBallScore, max: () => noOfGoldenBalls >= 10},
+    {button: "tinyButton", cost: () => tinyBallScore},
+    {button: "luckyButton", cost: () => luckyBallScore, max: () => noOfLuckyBall >= 5},
+    {button: "blackHoleButton", cost: () => 100000000, max: () => hasBlackHole},
+
+    //Upgrades
+    {button: "upgradeClickButton", cost: () => clickCost},
+    {button: "upgradeIncomeButton", cost: () => incomeCost},
+    {button: "upgradeAutomoverButton", cost: () => automoverUpgradeCost, max: () => automoverTimer == 100},
+    {button: "upgradeMultiplierButton", cost: () => scoreMultiplierCost},
+    {button: "upgradeLuckyBallsButton", cost: () => luckyCost, max: () => luckyUpgrade >= 0.4},
+    {button: "upgradeJackpotButton", cost: () => jackpotCost, max: () => jackpotUpgrades >= 10},
+
+    //Prestige Balls
+    {button: "persistentBallButton", cost: () => 10000000, max: () => hasPersistentBall},
+    {button: "pulseBallButton", cost: () => 100000000, max: () => hasPulseBall},
+    {button: "cornerBallButton", cost: () => 75000000 + (noOfCornerBalls * 25000000), max: () => noOfCornerBalls >= 4},
+    {button: "orbiterBallButton", cost: () => 120000000, max: () => hasOrbiterBall},
+    {button: "chainBallButton", cost: () => 150000000, max: () => hasChainBall},
+
+    //Prestiege and Rebirths
+    {button: "fullRebirthButton", cost: () => fullRebirthCost, max: () => (fullRebirths == newBalls.length)},
+    {button: "rebirthButton", cost: () => (Math.pow(4, rebirths) * 1000000)}
+
+];
+
+
+function checkScores(){
+
+    for(let item of shopChecks){
+
+        let button = document.getElementById(item.button);
+
+        button.classList.remove("canAfford");
+        button.classList.remove("cannotAfford");
+
+        //If item is MAX, leave default button colour
+        if(item.max && item.max()){
+            continue;
+        }
+
+        if(score >= item.cost()){
+            button.classList.add("canAfford");
+        }
+        else{
+            button.classList.add("cannotAfford");
+        }
+    }
 }
